@@ -1,0 +1,105 @@
+\pgfdeclarelayer{bg}    %
+\pgfsetlayers{bg,main} 
+
+\begin{tikzpicture}[
+	dot/.style={draw, inner sep=0pt, minimum size=6pt, circle, fill=black},
+	grid/.style={draw, lightgray, opacity=0.3}
+	]
+	
+	
+	\node[draw,
+	shape border rotate=120,
+	regular polygon,
+	regular polygon sides=3,
+	minimum size =4cm] (T123) at (0,0){};
+	
+	\node[draw,
+	shape border rotate=60,
+	regular polygon,
+	regular polygon sides=3,
+	anchor=corner 1,
+	rotate=0,
+	minimum size =4cm] (T124) at (T123.corner 1){};
+	
+	\node[draw,
+	shape border rotate=60,
+	regular polygon,
+	regular polygon sides=3,
+	anchor=corner 2,
+	rotate=0,
+	minimum size =4cm] (T234) at (T123.corner 2){};
+	
+	\node[draw,
+	shape border rotate=180,
+	regular polygon,
+	regular polygon sides=3,
+	anchor=corner 1,
+	rotate=0,
+	minimum size =4cm] (T134) at (T123.corner 1){};
+	
+	\coordinate (T123_M1) at (T123.corner 1);
+	\coordinate (T123_M2) at (T123.corner 2);
+	\coordinate (T123_M3) at (T123.corner 3);
+	
+	\coordinate (T134_M1) at (T134.corner 1);
+	\coordinate (T134_M3) at (T134.corner 2);
+	\coordinate (T134_M4) at (T134.corner 3);
+	
+	\coordinate (T124_M1) at (T124.corner 1);
+	\coordinate (T124_M4) at (T124.corner 2);
+	\coordinate (T124_M2) at (T124.corner 3);
+	
+	\coordinate (T234_M3) at (T234.corner 1);
+	\coordinate (T234_M2) at (T234.corner 2);
+	\coordinate (T234_M4) at (T234.corner 3);
+	
+	
+	\node[circle, label=below left:$v_1$] at (T123.corner 1) {};
+	\node[circle, label=below right:$v_2$] at (T123.corner 2) {};
+	\node[circle, label=above:$v_3$] at (T123.corner 3) {};
+	
+	\node[label=below:$v_4$] at (T124_M4) {};
+	\node[label=left:$v_4$]  at (T134_M4) {};
+	\node[label=right:$v_4$] at (T234_M4) {};
+	
+	
+	\begin{pgfonlayer}{bg}
+		
+		\foreach \k in {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}{
+				
+			
+			\draw [grid] let \p1=(T123_M1), \p2=(T123_M2), \n1={veclen(\x2-\x1,\y2-\y1)} in ($(T123_M1)+\k*(T134_M4)-\k*(T134_M1)$) arc (120:300:\k*\n1);
+			\draw [grid] let \p1=(T123_M1), \p2=(T123_M2), \n1={veclen(\x2-\x1,\y2-\y1)} in ($(T123_M2)+\k*(T124_M4)-\k*(T124_M2)$) arc (240:420:\k*\n1);
+			\draw [grid] let \p1=(T123_M1), \p2=(T123_M2), \n1={veclen(\x2-\x1,\y2-\y1)} in ($(T123_M3)+\k*(T234_M4)-\k*(T234_M3)$) arc (0:180:\k*\n1);
+			
+		}
+		
+		
+		\foreach \triangle in {T123, T124, T134, T234}{
+			
+			\coordinate (V1) at (\triangle.corner 1);
+			\coordinate (V2) at (\triangle.corner 2);
+			\coordinate (V3) at (\triangle.corner 3);
+			
+			\foreach \k in {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}{
+				\pgfmathsetmacro\x{\k}
+				\pgfmathsetmacro\y{1.0-\x}
+				\draw[grid] (barycentric cs:V1=\x,V2=\y) -- (V3);
+				\draw[grid] (barycentric cs:V1=\x,V3=\y) -- (V2);
+				\draw[grid] (barycentric cs:V2=\x,V3=\y) -- (V1);
+			}
+		}
+		
+	\end{pgfonlayer}{bg}
+
+
+	\node[dot, color1, label=$T$] (T) at (barycentric cs:T123_M1=0.15,T123_M2=0.3,T123_M3=0.55) {};
+    \path [name path=M1T] (T123_M1) -- ($(T123_M1)!7cm!(T)$);
+
+    \path [name path=M2T] (T123_M2) -- ($(T123_M2)!7cm!(T)$);
+    \path [name path=M1M3] (T123_M1) -- (T123_M3);
+    \node [dot, name intersections={of=M2T and M1M3, by=R'}, label=$R'$, black] (R') at (intersection-1) {};
+    \path[draw, name path=M2R', label=$t$, color1] (T123_M2) -- (R') node[midway,below] {$t$};
+    \path[draw, name path=R'M4, color1] (R') -- (T134_M4) node[midway,below] {r};
+
+\end{tikzpicture}
