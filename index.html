@@ -594,7 +594,7 @@ TO DO: Format the pseudocode algorithm, see <a href="https://github.com/leovan/q
 
 </div>
 </div>
-<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-line-number="true" data-alg-title="Algorithm" data-line-number-punc=":" data-indent-size="1.2em" data-comment-delimiter="//" data-pseudocode-index="1" data-no-end="false">
+<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-indent-size="1.2em" data-comment-delimiter="//" data-line-number="true" data-line-number-punc=":" data-no-end="false" data-pseudocode-index="1" data-alg-title="Algorithm">
 <div class="pseudocode">
 \begin{algorithm} \caption{Marginal density approximation} \begin{algorithmic} \REQUIRE{Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$} \ENSURE{Approximate marginal density $\hat{p}(z)$} \FOR{$\sigma_{-j}\in\K$} \FOR{$z\in\subdivision(\sigma_{-j})$} \STATE{$s = \overline{z v_j}$} \STATE{$\hat{p}(z)=0$} \FOR{$m=1,\ldots, M$} \STATE{$x_m\leftarrow z + \frac{s}{M}$}\hfill\COMMENT{equidistant points on $s$} \STATE{$\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$} \ENDFOR \ENDFOR \ENDFOR \RETURN $\hat{p}(z)$ \end{algorithmic} \end{algorithm}
 </div>
