@@ -2,13 +2,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.313">
+<meta name="generator" content="quarto-1.4.551">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Matthew Kay">
+<meta name="author" content="Marvin Schmitt">
+<meta name="author" content="Yuga Hikida">
+<meta name="author" content="Stefan T. Radev">
+<meta name="author" content="Filip Sadlo">
+<meta name="author" content="Paul-Christian Bürkner">
 
-<title>JoVI article template for the experimental track</title>
+<title>The Simplex Projection</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +24,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 /* CSS for citations */
 div.csl-bib-body { }
@@ -87,9 +57,38 @@ div.csl-indent {
 <script src="index_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="index_files/libs/quarto-contrib/pseudocode-2.4.1/pseudocode.min.js"></script>
+<link href="index_files/libs/quarto-contrib/pseudocode-2.4.1/pseudocode.min.css" rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -101,13 +100,22 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#setup" id="toc-setup" class="nav-link active" data-scroll-target="#setup"><span class="header-section-number">1</span> Setting up and writing a JoVI article</a></li>
-  <li><a href="#citations-and-footnotes" id="toc-citations-and-footnotes" class="nav-link" data-scroll-target="#citations-and-footnotes"><span class="header-section-number">2</span> Citations and footnotes</a></li>
-  <li><a href="#figures-and-images" id="toc-figures-and-images" class="nav-link" data-scroll-target="#figures-and-images"><span class="header-section-number">3</span> Figures and images</a></li>
-  <li><a href="#body-text" id="toc-body-text" class="nav-link" data-scroll-target="#body-text"><span class="header-section-number">4</span> Body text</a></li>
-  <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code"><span class="header-section-number">5</span> Code</a></li>
-  <li><a href="#equations" id="toc-equations" class="nav-link" data-scroll-target="#equations"><span class="header-section-number">6</span> Equations</a></li>
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link active" data-scroll-target="#introduction-1"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-preliminaries" id="toc-sec-preliminaries" class="nav-link" data-scroll-target="#sec-preliminaries"><span class="header-section-number">2</span> Preliminaries</a></li>
+  <li><a href="#related-work" id="toc-related-work" class="nav-link" data-scroll-target="#related-work"><span class="header-section-number">3</span> Related Work</a></li>
+  <li><a href="#simplex-projection" id="toc-simplex-projection" class="nav-link" data-scroll-target="#simplex-projection"><span class="header-section-number">4</span> Simplex Projection</a>
+  <ul class="collapse">
+  <li><a href="#sec-methods-simplex-projection-labeled-points" id="toc-sec-methods-simplex-projection-labeled-points" class="nav-link" data-scroll-target="#sec-methods-simplex-projection-labeled-points">Single Point</a></li>
+  <li><a href="#set-of-points" id="toc-set-of-points" class="nav-link" data-scroll-target="#set-of-points">Set of Points</a></li>
+  <li><a href="#continuous-probability-densities" id="toc-continuous-probability-densities" class="nav-link" data-scroll-target="#continuous-probability-densities">Continuous Probability Densities</a></li>
+  </ul></li>
+  <li><a href="#conclusion-1" id="toc-conclusion-1" class="nav-link" data-scroll-target="#conclusion-1"><span class="header-section-number">5</span> Conclusion</a></li>
+  
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#appendix-details-and-proofs" id="toc-appendix-details-and-proofs" class="nav-link" data-scroll-target="#appendix-details-and-proofs">Appendix: Details and Proofs</a>
+  <ul class="collapse">
+  <li><a href="#app:image-domain" id="toc-app:image-domain" class="nav-link" data-scroll-target="#app\:image-domain">Image of the Perspective Projection <span class="math inline">\(\phi\)</span></a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -115,23 +123,56 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">JoVI article template for the experimental track</h1>
+<h1 class="title">The Simplex Projection</h1>
+<p class="subtitle lead">Lossless Visualization of 4D Compositional Data on a 2D Canvas</p>
 </div>
 
 
 <div class="quarto-title-meta-author">
-  <div class="quarto-title-meta-heading">Author</div>
-  <div class="quarto-title-meta-heading">Affiliation</div>
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
   
     <div class="quarto-title-meta-contents">
-    <p class="author">Matthew Kay <a href="https://orcid.org/0000-0001-9446-0419" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+    <p class="author">Marvin Schmitt <a href="mailto:mail.marvinschmitt@gmail.com" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-7967-4723" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
   </div>
-    <div class="quarto-title-meta-contents">
+  <div class="quarto-title-meta-contents">
         <p class="affiliation">
-            Northwestern University
+            University of Stuttgart
           </p>
       </div>
-    </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Yuga Hikida </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            TU Dortmund University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Stefan T. Radev <a href="mailto:stefan.radev93@gmail.com" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Rensellaer Polytechnic Institute
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Filip Sadlo </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Heidelberg University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Paul-Christian Bürkner <a href="mailto:paul.buerkner@gmail.com" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            TU Dortmund University
+          </p>
+      </div>
+  </div>
 
 <div class="quarto-title-meta">
 
@@ -141,13 +182,25 @@ div.csl-indent {
   </div>
   
 
+
 </header>
 
-<p>This template is intended for the <a href="https://www.journalovi.org/submit.html#experimental">experimental track</a> at JoVI.</p>
-<p>This template describes how to set up the <a href="https://quarto.org/">Quarto</a> environment for writing a JoVI article, provides instructions and templates for content that should be included in every JoVI article (such as the structured abstract and authorship metadata), and gives brief examples of some useful functionality for writing papers (such as how to include figures and citations).</p>
-<p>If you have not setup <a href="https://quarto.org/">Quarto</a> or the JoVI template yet, skip to the <a href="#setup">Setup</a> section below.</p>
+
+<div class="callout callout-style-simple callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+In Development for Review
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This paper is in development for review on the experimental track of the <a href="https://www.journalovi.org/">Journal of Visualization and Interaction</a>.</p>
+</div>
+</div>
 <div class="callout callout-style-simple callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -156,51 +209,37 @@ Abstract
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-1" class="callout-1-contents callout-collapse collapse show">
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
 <div class="callout-body-container callout-body">
-<p>We highly recommend all JoVI articles use a structured abstract. Structured abstracts provide a succinct overview of an article using a common set of sections. Which sections are used depends on the type of research and its goals. For example, articles with empirical methods should have a data collection section, while articles that do not analyze data to support a conclusion do not need such a section.</p>
-<p>Your paper may fall into multiple types of work. We provide some example sections you may want to include in your structured abstract below, depending on the type of work. You can use the example sections to fill in the subsections that apply to your paper, then delete these first two paragraphs and the subsections that do not apply to your paper. Please add, merge, rename, or re-order sections if you feel that would improve clarity. We have some (partial) examples of structured abstracts <a href="https://www.journalovi.org/structured-abstract-examples.html">here</a>.</p>
 <section id="introduction" class="level6">
 <h6 class="anchored" data-anchor-id="introduction">Introduction</h6>
-<p>The research question and a succinct motivation for answering it.</p>
+<p>The simplex projection expands the capabilities of simplex plots (also known as ternary plots) to achieve a lossless visualization of 4D compositional data on a 2D canvas. Previously, this was only possible for 3D compositional data.</p>
 </section>
 <section id="theorymodel" class="level6">
 <h6 class="anchored" data-anchor-id="theorymodel">Theory/model</h6>
-<p><em>For theories or models</em>: A description of the theory or model, its key organizing principle, or new insights that might be gained from it</p>
-</section>
-<section id="data-collection-or-source" class="level6">
-<h6 class="anchored" data-anchor-id="data-collection-or-source">Data Collection or Source</h6>
-<p><em>For empirical research, reanalysis, or meta-analysis</em>: An overview of experiment and/or data collection procedures. Mention if the collection was prespecified (via preregistration) or exploratory. For reanalyses or meta-analyses, citations of the original sources are sufficient. This section does not apply to articles that only use datasets for demonstrations.</p>
-</section>
-<section id="data-analysis" class="level6">
-<h6 class="anchored" data-anchor-id="data-analysis">Data Analysis</h6>
-<p><em>For empirical research, reanalysis, or meta-analysis</em>: An overview of analysis approaches used as evidence for conclusions. This section does not apply to articles that only use datasets for demonstrations.</p>
-</section>
-<section id="analysis-results" class="level6">
-<h6 class="anchored" data-anchor-id="analysis-results">Analysis Results</h6>
-<p><em>For empirical research, reanalysis, or meta-analysis</em>: A summary of the analysis findings</p>
+<p>We demonstrate how our approach can be applied to individual data points, point clouds, and continuous probability density functions on simplices. While we showcase our visualization technique specifically for 4D compositional data, we offer rigorous proofs that support its extension to compositional data of any (finite) dimensionality.</p>
 </section>
 <section id="implementation" class="level6">
 <h6 class="anchored" data-anchor-id="implementation">Implementation</h6>
-<p><em>For systems or techniques</em>: How was the application or system implemented?</p>
+<p>[How was the application or system implemented?]</p>
 </section>
 <section id="demonstration" class="level6">
 <h6 class="anchored" data-anchor-id="demonstration">Demonstration</h6>
-<p><em>For systems or techniques</em>: A description of any demonstrations or functionality that exemplify the utility of the system</p>
+<p>TBD</p>
 </section>
 <section id="conclusion" class="level6">
 <h6 class="anchored" data-anchor-id="conclusion">Conclusion</h6>
-<p>An interpretation of results, lessons learned, etc. in the context of the research question and its implications. <em>Avoid overgeneralizing</em>, and <em>avoid broad behavioral claims without strong evidence.</em></p>
+<p>[An interpretation of results, lessons learned, etc. in the context of the research question and its implications. <em>Avoid overgeneralizing</em>, and <em>avoid broad behavioral claims without strong evidence.</em>]</p>
 </section>
 <section id="materials" class="level6">
 <h6 class="anchored" data-anchor-id="materials">Materials</h6>
-<p>Link to repositories containing raw data, open source code or (pre-)registration number/links.</p>
+<p>TBD</p>
 </section>
 </div>
 </div>
 </div>
 <div class="callout callout-style-simple callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -209,9 +248,8 @@ Materials, Authorship, License, Conflicts
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Fill in the following sections in this infobox per the <a href="https://www.journalovi.org/author-guide.html#sections">JoVI Author Guide</a>, then delete this line.</p>
 <section id="research-materials" class="level6">
 <h6 class="anchored" data-anchor-id="research-materials">Research materials</h6>
 <p>See <a href="https://www.journalovi.org/author-guide.html#research-material-statements">the corresponding section in the author guide</a>.</p>
@@ -231,95 +269,434 @@ Materials, Authorship, License, Conflicts
 </div>
 </div>
 </div>
-<section id="setup" class="level2" data-number="1">
-<h2 data-number="1" class="anchored" data-anchor-id="setup"><span class="header-section-number">1</span> Setting up and writing a JoVI article</h2>
-<p>Articles on the JoVI experimental track are written in Quarto, which is a simple markdown-based text format. This template outlines some of the features that are most useful for writing academic articles in Quarto; for more visit <a href="https://quarto.org" class="uri">https://quarto.org</a>.</p>
-<p>You can find the source for this article in the <a href="https://github.com/journalovi/jovi-template-quarto">journalovi/jovi-template-quarto</a> repository on Github. To create a new JoVI article, we recommend following these steps:</p>
-<ol type="1">
-<li><p>Install Quarto by following <a href="https://quarto.org/docs/getting-started/installation.html">these instructions</a>.</p></li>
-<li><p>Create a new git repository to hold your article by <a href="https://github.com/journalovi/jovi-template-quarto">forking our template repository</a>.</p></li>
-</ol>
-<p>You can then edit <code>index.qmd</code> in your new repository to write your paper. There are several options for editing and rendering the paper:</p>
-<ol type="1">
-<li><p>You can execute <code>quarto serve</code> from the commandline to render the paper to <code>index.html</code> and preview it in the browser.</p></li>
-<li><p>You can edit the paper in RStudio and render it by clicking on the <em>Render</em> button:</p>
-<p><img src="images/rstudio-render-button.png" class="img-fluid" style="width: 382.5px" data-fig.alt="Click Render in the Rstudio toolbar to render a Quarto document."></p></li>
-</ol>
-<p><strong>If you plan to use RStudio,</strong> read more about RStudio and Quarto <a href="https://quarto.org/docs/computations/using-rstudio.html">here</a>. In particular, you should install RStudio &gt; version 1.5. If you do, you can also enable the visual editor:</p>
-<p><img src="images/rstudio-visual-editor.png" class="img-fluid" style="width: 554.5px" data-fig.alt="Click the Settings button and then Use Visual Editor in the Rstudio toolbar to enable the visual editor."></p>
+<section id="introduction-1" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction-1"><span class="header-section-number">1</span> Introduction</h2>
+<p>The visualization of high-dimensional data is a key task in countless domains of scientific research. Yet, the representation of multi-dimensional data in a two-dimensional canvas (e.g., static screens or paper) can pose a significant challenge, leading to substantial information loss or distortions, which, in turn, can skew the interpretation and analysis of the data.</p>
+<p>In this paper, we address this challenge by developing a novel approach for visualizing 4D compositional data on a 2D canvas. Compositional data consists of vectors with strictly positive entries that sum to one . This data type naturally arises for proportions, normalized data, or discrete probabilities. Examples for compositional data include (i) the relative composition of the gut microbiome ; (ii) proportion of peoples’ activities throughout the day ; or (iii) discrete probability vectors, such as posterior model probabilities arising in Bayesian model comparison .</p>
+<p>Our technique, which we call , is a lossless visualization method that accurately represents the compositional data while preserving its geometrical and topological properties. We prove mathematically that our mapping from 4D compositional data to its 2D representation is a bijection (invertible one-to-one correspondence) that incurs no loss of information. We demonstrate the effectiveness of our approach, highlighting the simplex projection as a potent tool for exploring and analyzing 4D compositional data. While the underlying mathematical treatment holds for arbitrary finite dimensions, throughout the paper, we will focus chiefly on illustrations and intuitions for the 4D case.</p>
 </section>
-<section id="citations-and-footnotes" class="level2" data-number="2">
-<h2 data-number="2" class="anchored" data-anchor-id="citations-and-footnotes"><span class="header-section-number">2</span> Citations and footnotes</h2>
-<p>Citations can be inserted using <code>[@simkin2002read]</code>, which is rendered as: <span class="citation" data-cites="simkin2002read">(<a href="#ref-simkin2002read" role="doc-biblioref">Simkin and Roychowdhury 2002</a>)</span>. You can also format the citation just as the year with <code>[-@simkin2002read]</code>, though then we recommending including author names in the sentence; e.g.&nbsp;<code>Simkin and Roychowdhury [-@simkin2002read] said blah blah blah</code>: Simkin and Roychowdhury <span class="citation" data-cites="simkin2002read">(<a href="#ref-simkin2002read" role="doc-biblioref">2002</a>)</span> said blah blah blah. Citations for this paper are kept in <code>bibliography.bib</code> in BibTeX format.</p>
-<p>You can also insert footnotes.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Note that some traditional uses of footnotes (e.g.&nbsp;to include URLs) are unnecessary in JoVI, as you can (and should) instead simply link directly to the URL you want to refer to with an <a href="https://www.markdownguide.org/basic-syntax/#links">inline link</a>.</p>
-<p>For more on footnotes and citations see <a href="https://quarto.org/docs/authoring/footnotes-and-citations.html">this Quarto documentation page</a>.</p>
+<section id="sec-preliminaries" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="sec-preliminaries"><span class="header-section-number">2</span> Preliminaries</h2>
+<p>Throughout this manuscript, let <span class="math inline">\(J\in\mathbb{N}\)</span>, and the points <span class="math inline">\(v_1, \ldots, v_J\in\mathbb{R}^J\)</span> be affinely independent, that is, <span class="math inline">\((v_2-v_1), \ldots, (v_j-v_1)\)</span> are linearly independent. Further, the points <span class="math inline">\(v_1, \ldots, v_J\)</span> are the vertices of the <span class="math inline">\((J-1)\)</span>-dimensional simplex <span class="math inline">\(\Delta^{J-1}\)</span> defined by the set</p>
+<p><span id="eq-simplex-definition"><span class="math display">\[
+    \Delta^{J-1} =
+    \Big\{
+        x\in\mathbb{R}^J: x = \sum_{j=1}^J\pi_j v_j
+    \Big\},
+\tag{1}\]</span></span></p>
+<p>with weights <span class="math inline">\(\pi_j\in(0,1)\)</span> such that <span class="math inline">\(\sum_{j=1}^J\pi_j=1\)</span>. When the dimension of the simplex <span class="math inline">\(\Delta^{J-1}\)</span> is sufficiently clear from the context, we drop the superscript and simply write <span class="math inline">\(\Delta\)</span>.</p>
+<p>The representation of a point <span class="math inline">\(x\)</span> through weighted vertices, that is, via coefficients <span class="math inline">\((\pi_1,\ldots,\pi_J)\)</span> in <a href="#eq-simplex-definition" class="quarto-xref">Equation&nbsp;1</a>, is commonly referred to as <em>barycentric coordinates</em> with respect to the vertices <span class="math inline">\(v_1, \ldots, v_J\)</span>. For brevity, we will slightly overload the notation and use the vector of barycentric coordinates <span class="math inline">\((\pi_1, \ldots, \pi_J)\)</span> to refer to a point <span class="math inline">\(x=\sum_{j=1}^J\pi_j\,v_j\)</span> in the simplex with vertices <span class="math inline">\(v_1,\ldots,v_J\)</span> as defined in <a href="#eq-simplex-definition" class="quarto-xref">Equation&nbsp;1</a>. Since any two simplices of equal dimension <span class="math inline">\(J\)</span> are homeomorphic by a simplicial homeomorphism , the exact location of the vertices <span class="math inline">\(v_1, \ldots, v_J\)</span> is irrelevant and we will use regular (aka. equilateral) simplices for all illustrations.</p>
+<p>The convex hull of each non-empty subset of size <span class="math inline">\(N\)</span> from the <span class="math inline">\(J\)</span> vertices <span class="math inline">\(v_1,\ldots,v_J\)</span> of a simplex <span class="math inline">\(\Delta^{J-1}\)</span> is called a <span class="math inline">\((N-1)\)</span>-face. In particular, the <span class="math inline">\(0\)</span>-faces are the vertices, the <span class="math inline">\(1\)</span>-faces are the edges, the <span class="math inline">\((J-2)\)</span>-faces are the facets which we denote as <span class="math inline">\(\sigma\)</span>, and the only <span class="math inline">\((J-1)\)</span>-face is the simplex <span class="math inline">\(\Delta^{J-1}\)</span> itself. We denote the facet opposing a given vertex <span class="math inline">\(v_j\)</span> as <span class="math inline">\(\sigma_{-j}\)</span>.</p>
+<p>Let <span class="math inline">\((\pi_1, \ldots, \pi_J)\)</span> be barycentric coordinates with <span class="math inline">\(J\)</span> components, as defined above. For an index subset <span class="math inline">\(K\subseteq \{1,\ldots, J\}\)</span>, we define <span class="math display">\[\begin{equation}\label{eq:renormalized-barycentric-coordinates}
+    \Big(\tilde{\pi}_k\Big)_{k\in K} =
+    \left(\dfrac{\pi_k}{\sum\limits_{k{'}\in K}\pi_{k{'}}}\right)_{k\in K}
+\end{equation}\]</span> as (mind the tilde to differentiate between vanilla and renormalized coordinates). The term “renormalized” is motivated by the normalizing effect of the denominator in . While a simple subset of compositional data does not generally sum to one, <span class="math inline">\(\sum_{k\in K}\pi_k \leq 1\)</span>, it is easy to show that the renormalized barycentric subset sums to one, <span class="math inline">\(\sum_{k \in K}\tilde{\pi}_k = 1\)</span>. Moreover, the ratio of every two renormalized coordinates <span class="math inline">\(\tilde{\pi}_n, \tilde{\pi}_m\)</span> equals the ratio of the original coordinates <span class="math inline">\(\pi_n, \pi_m\)</span> since these ratios are clearly invariant to the division by the same normalizing constant, <span class="math display">\[\begin{equation}
+    \frac{\pi_n}{\pi_m}=\frac{\pi_n / \sum_{k\in K}\pi_{k}}{\pi_m / \sum_{k\in K}\pi_{k}}\overset{\text{def}}{=}\frac{\tilde{\pi}_n}{\tilde{\pi}_m},
+\end{equation}\]</span> as depicted in .</p>
+<section id="simplicial-complex" class="level4">
+<h4 class="anchored" data-anchor-id="simplicial-complex">Simplicial complex</h4>
+Following the definition of , a simplicial complex <span class="math inline">\(\mathcal{K}\)</span> is a set of simplices in an Euclidean space that satisfies (see for an illustration):
+<p>A simplicial complex <span class="math inline">\(\mathcal{K}\)</span> is a if all simplices <span class="math inline">\(\sigma\in\mathcal{K}\)</span> have equal dimension. In what follows, we will project a point <span class="math inline">\(x\)</span> from the <span class="math inline">\((J-1)\)</span>-dimensional simplex <span class="math inline">\(\Delta\)</span> onto <span class="math inline">\(J\)</span> points <span class="math inline">\(x_1,\ldots,x_J\)</span>, where each projected point <span class="math inline">\(x_j\)</span> (<span class="math inline">\(j=1,\ldots,J\)</span>) lies in a <span class="math inline">\((J-2)\)</span>-dimensional simplex <span class="math inline">\(\sigma_{-j}\)</span>, and all simplices <span class="math inline">\(\sigma_{-1}, \ldots, \sigma_{-J}\)</span> form a pure simplicial complex. Since the number of lower-dimensional simplices <span class="math inline">\(\sigma\)</span> and the dimensionality of the higher-dimensional point <span class="math inline">\(x\)</span> are equal in our application, we refer to both as <span class="math inline">\(J\)</span>. Further, we will need to refer to the set <span class="math inline">\(\{x_1, \ldots, x_J\}\)</span>, where each point lies in exactly one simplex <span class="math inline">\(\sigma_{-j}\)</span> of the simplicial complex <span class="math inline">\(\mathcal{K}=\{\sigma_{-1},\ldots,\sigma_{-J}\}\)</span>, and the indices <span class="math inline">\(j\)</span> coincide (see previous section for details on the <span class="math inline">\(-j\)</span> index notation). We capture this with the following product notation: <span class="math display">\[\begin{equation}
+    \prod\limits_{j=1}^J \sigma_{-j} = \sigma_{-1} \times \ldots \times \sigma_{-J} = \Big\{ x_j \,\Big\vert\, x_j\in\sigma_{-j} \Big\}_{j=1}^J
+\end{equation}\]</span></p>
 </section>
-<section id="figures-and-images" class="level2" data-number="3">
-<h2 data-number="3" class="anchored" data-anchor-id="figures-and-images"><span class="header-section-number">3</span> Figures and images</h2>
-<p>Images can be included and for accessibility purposes <strong>should always</strong> have alt text. Alt text of visualizations should provide meaningful descriptions of the visualization.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/teaser.svg)</span>{fig.alt="Mean expected payoff / optimal</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>payoff for 10 conditions, showing an increase over time in most</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>conditions, with dot50 having the highest value of</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>approximately 97% of optimal."}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><img src="images/teaser.svg" class="img-fluid" data-fig.alt="Mean expected payoff / optimal payoff for 10 conditions, showing an increase over time in most conditions, with dot50 having the highest value of approximately 97% of optimal."></p>
-<p>You can also add captions and figure references using a <code>:::</code> block combined with an id prefixed with <code>#fig-</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>::: {#fig-teaser}</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="al">![](images/teaser.svg)</span>{fig.alt="Mean expected payoff / optimal</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>payoff for 10 conditions, showing an increase over time in most</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>conditions, with dot50 having the highest value of</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>approximately 97% of optimal."}</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>Mean expected payoff / optimal payoff for 10 conditions.</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>:::</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="fig-teaser" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="images/teaser.svg" class="img-fluid figure-img" data-fig.alt="Mean expected payoff / optimal payoff for 10 conditions, showing an increase over time in most conditions, with dot50 having the highest value of approximately 97% of optimal."></p>
-<p></p><figcaption class="figure-caption">Figure&nbsp;1: Mean expected payoff / optimal payoff for 10 conditions.</figcaption><p></p>
-</figure>
+<section id="perspective-projection" class="level4">
+<h4 class="anchored" data-anchor-id="perspective-projection">Perspective Projection</h4>
+<p>Let <span class="math inline">\(\Delta\)</span> be a (<span class="math inline">\(J-1\)</span>)-simplex and <span class="math inline">\((\pi_1, \ldots, \pi_J)\)</span> be barycentric coordinates of a point <span class="math inline">\(x\in\Delta\)</span>. Then, we define <span class="math display">\[\begin{equation}\label{eq:perspective-projection}
+    \begin{aligned}
+        \psi_j: \Delta&amp;\rightarrow \sigma_{-j}\\
+        x&amp;\mapsto \psi_j(x)\\
+        (\pi_1, \ldots, \pi_J) &amp;\mapsto
+        \left( \tilde{\pi}_1,\ldots, \tilde{\pi}_{j-1}, \tilde{\pi}_{j+1}, \ldots, \tilde{\pi}_J \right)
+    \end{aligned}
+\end{equation}\]</span> as the of <span class="math inline">\(x\)</span> about the vertex <span class="math inline">\(v_j\)</span> onto the opposing facet <span class="math inline">\(\sigma_{-j}\)</span>. This corresponds to shooting a ray from the vertex <span class="math inline">\(v_j\)</span> through the point <span class="math inline">\(x\)</span>, and the intersection of that ray with the opposing edge is the image <span class="math inline">\(\psi_j(x)\)</span>. provides an illustration for a triangle (2-simplex) <span class="math inline">\(\Delta\)</span> with edges <span class="math inline">\(v_1, v_2, v_3\)</span>, where the perspective projection <span class="math inline">\(\psi_1\)</span> projects the point <span class="math inline">\(x\)</span> about the vertex <span class="math inline">\(v_1\)</span> onto the opposing edge <span class="math inline">\(\sigma_{-1}=\overline{v_2v_3}\)</span> (<span class="math inline">\(\overline{AB}\)</span> denotes a line segment from <span class="math inline">\(A\)</span> to <span class="math inline">\(B\)</span>). It is evident that perspective projection about a vertex <span class="math inline">\(v_j\)</span> is the geometrical equivalent to renormalization () after removing the <span class="math inline">\(j^{\text{th}}\)</span> component. For the theorems below, it is crucial that perspective projection does not affect the ratios of the remaining components’ barycentric coordinates.</p>
+</section>
+</section>
+<section id="related-work" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="related-work"><span class="header-section-number">3</span> Related Work</h2>
+<p>In the following, we will briefly compare three fundamental visualization techniques to plot compositional data: parallel coordinate plots, stacked plots, and simplex (aka ternary) plots. An illustration of each method for a fixed data set is displayed in .</p>
+<p><em>Parallel coordinate plots</em> depict the dimension as a variable on the <span class="math inline">\(x\)</span>-axis (see ). This means that, in principle, there is no upper bound on the number of data dimensions. However, correlations and clusters are not immediately visible, which is a major conceptual drawback of parallel plots.</p>
+<p><em>Stacked plots</em> are vertically stacked area plots with a continuous <span class="math inline">\(x\)</span>-axis (see ). The dimension is encoded in the fill color or pattern of the respective area. Stacked plots can communicate a relatively large number of dimensions, with an upper bound given by the number of discrete levels for the area fill (e.g., color or fill pattern). Global trends, such as high values on one dimension throughout many data sets, are easily visible. Furthermore, an additional (continuous) variable of interest can be plotted on the <span class="math inline">\(x\)</span>-axis. As a drawback, correlations between data instances as well as clusters are not immediately visible. Moreover, the usability of stacked plots is influenced by crucial design choices, such as ordering , layout , or type .</p>
+<p><em>Simplex plots</em> leverage the fact that compositional data <span class="math inline">\((\pi_1, \ldots, \pi_J)\)</span> fulfil the properties of barycentric coordinates (they sum to 1 and are non-negative) according to . Consequently, the simplex plot visualizes the data as a point in an equilateral triangle (<span class="math inline">\(2\)</span>-simplex) by interpreting the data as barycentric coordinates (see ). The main advantage of simplex plots is that correlations are immediately visible. The crucial drawback of a simplex plot is the data dimension in the visualization: In an <span class="math inline">\(n\)</span>-dimensional visualization, the conventional simplex plot is limited to <span class="math inline">\(n+1\)</span> components. In a printed <span class="math inline">\(2\)</span>D medium, this implies an upper bound of <span class="math inline">\(3\)</span> dimensions for compositional data.</p>
+<p>Within the scope of this paper, we will extend simplex plots in order to preserve their advantages (i.e., conveying correlations between components) while pushing the envelope on their main drawback, namely the limited number of dimensions.</p>
+</section>
+<section id="simplex-projection" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="simplex-projection"><span class="header-section-number">4</span> Simplex Projection</h2>
+<p>We leverage the structure of compositional data to propose a visualization method with less image dimensions than data dimensions. Precisely, we show that all the points in a higher dimensional simplex can be projected onto its facet without loss of information by proving that our simplex projection is bijective. Consequently, compositional data with any dimension can be projected onto a 2D canvas. However, in this paper, we specifically highlight the case of <span class="math inline">\(J = 4\)</span> components, that is, data that could be na"ively visualized via a tetrahedron. After proving that the method acts as a bijective mapping between the full-order simplex and lower-order multivariate marginals for single points, we show how the method generalizes to entire sets of points and even to continuous probability density functions.</p>
+<section id="sec-methods-simplex-projection-labeled-points" class="level3">
+<h3 class="anchored" data-anchor-id="sec-methods-simplex-projection-labeled-points">Single Point</h3>
+<p>Consider a point <span class="math inline">\(x\in\Delta\)</span> in the <span class="math inline">\((J-1)\)</span> simplex. In the following, we will prove that a set of perspective projections <span class="math inline">\(\big(\psi_1,\ldots,\psi_J\big)\)</span> constitutes an invertible mapping function <span class="math inline">\(\phi\)</span>. That is, we can reconstruct the original point <span class="math inline">\(x\)</span> from its image <span class="math inline">\(\phi(x)\)</span> under the mapping function <span class="math inline">\(\phi\)</span>. The exact form of <span class="math inline">\(\phi\)</span> is illustrated in and formalized below.</p>
+<div id="thm-matching-points" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Bijective simplex projection for labeled points)</strong></span> Let <span class="math inline">\(\Delta\)</span> be a <span class="math inline">\((J-1)\)</span>-simplex, <span class="math inline">\(\mathcal{K}=\left\{\sigma_{-j}\right\}_{j=1}^J\)</span> be a pure simplicial complex of the facets of <span class="math inline">\(\Delta\)</span>, and <span class="math inline">\(\psi_j(x)\)</span> the perspective projection of <span class="math inline">\(x\)</span> onto <span class="math inline">\(\sigma_{-j}\)</span> about the vertex <span class="math inline">\(v_j\)</span>. Further, let <span class="math inline">\(\mathrm{Img}_{\phi}\)</span> be the image of <span class="math inline">\(\phi\)</span>, as detailed in the Appendix. Then, <span class="math display">\[\begin{equation}\label{eq:bijection-Delta-K}
+    \begin{aligned}
+    \phi: \Delta &amp;\rightarrow \mathrm{Img}_{\phi}(\Delta)\\
+                x &amp; \mapsto
+        \left(
+            \psi_j\left(x\right)\in\sigma_{-j}
+        \right)_{j=1}^J
+\end{aligned}
+\end{equation}\]</span> is a bijective mapping from the <span class="math inline">\((J-1)\)</span>-simplex <span class="math inline">\(\Delta\)</span> to the set of compatible projections in the product set of the <span class="math inline">\((J-2)\)</span>-facets of <span class="math inline">\(\Delta\)</span>. What is more, only two matching projections <span class="math inline">\(T\in\sigma_{-1}, R\in\sigma_{-2}\)</span> onto different simplices <span class="math inline">\(\sigma_{-1}, \sigma_{-2}\in\mathcal{K}\)</span> suffice to uniquely define the original point <span class="math inline">\(x\in\Delta\)</span>.</p>
 </div>
-<p>Then you can refer to the above figure in text using <code>@fig-teaser</code>; for example:</p>
-<p>Refer to <a href="#fig-teaser">Figure&nbsp;1</a>. For more on cross-references, see the <a href="https://quarto.org/docs/authoring/cross-references.html">Quarto page on cross-references</a>.</p>
-<p>For the highest-quality output, we recommend using SVG figures if possible.</p>
-<p>Quarto also contains classes for more complex figure layouts and subfigures, which we recommend using in most cases if you need more complex layouts; see <a href="https://quarto.org/docs/authoring/figures-and-layout.html">the Quarto page on figures</a>. That said, we encourage exploration of what is possible with online article formats, and you should feel free to experiment so long as the result is archivable, accessible, and readable.</p>
-</section>
-<section id="body-text" class="level2" data-number="4">
-<h2 data-number="4" class="anchored" data-anchor-id="body-text"><span class="header-section-number">4</span> Body text</h2>
-<p>The basic body text, header formatting, and basic tags such as links, emphasis, etc should be left as-is except in rare cases (for which you should be able to demonstrate the value of your modifications). That said, we do encourage experimentation with what is possible in this format; some possibilities that just scrath the surface include: using color or other formatting to link text content semantically with figures; using inline figures; experimenting with interactive widgets in text and figures. So long as content retains archivability, accessibility, and readability, we welcome experimentation with the format.</p>
-</section>
-<section id="code" class="level2" data-number="5">
-<h2 data-number="5" class="anchored" data-anchor-id="code"><span class="header-section-number">5</span> Code</h2>
-<p>Quarto supports R and python code; for example:</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 3</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
+<div class="callout-title-container flex-fill">
+Proof of <a href="#thm-matching-points" class="quarto-xref">Theorem&nbsp;1</a> (click to unfold)
 </div>
-</section>
-<section id="equations" class="level2" data-number="6">
-<h2 data-number="6" class="anchored" data-anchor-id="equations"><span class="header-section-number">6</span> Equations</h2>
-<p>Equations can be included using LaTeX syntax:</p>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The proof will show that <span class="math inline">\(\phi\)</span> is a bijective map by proving that <span class="math inline">\(\phi\)</span> is invertible.</p>
+<p>Let <span class="math inline">\(x=(\pi_1,\ldots,\pi_J)\in\Delta^{J-1}\)</span> and <span class="math inline">\(\phi(x)\)</span> be the projections of <span class="math inline">\(x\)</span> onto the respective facets as defined above. The projection on each facet <span class="math inline">\(\sigma_j\)</span> is described by the renormalized barycentric coordinates after removing the <span class="math inline">\(j^{\text{th}}\)</span> component</p>
 <p><span class="math display">\[
-x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}
+    \psi_j(x) = (\tilde{\pi}_1, \ldots, \tilde{\pi}_{j-1}, \tilde{\pi}_{j+1}, \ldots, \tilde{\pi}_J)
 \]</span></p>
-<p>For more on equations, see <a href="">the corresponding section in the Quarto documentation</a>.</p>
+<p>by definition in and . By repeatedly removing another component and re-normalizing the coordinates, we can extract numerical values <span class="math display">\[
+    \frac{\pi_n}{\pi_m}=r_{n,m}
+\]</span> for the ratios of all pairs of barycentric coordinates of the original point <span class="math inline">\(x\)</span> because the barycentric coordinate are invariant to projection. In the following, we will only consider the ratios of subsequent components, i.e., <span class="math inline">\(\{\frac{\pi_1}{\pi_2},\frac{\pi_2}{\pi_3},\ldots,\frac{\pi_{J-1}}{\pi_J}\}\)</span>. The other ratios are not required to solve the problem at hand. Recall that the constraint <span class="math inline">\(\sum_{j=1}^J\pi_j=1\)</span> still holds for the barycentric coordinates of <span class="math inline">\(x\)</span>. This yields a system of <span class="math inline">\(J\)</span> equations</p>
+<p><span class="math display">\[\begin{equation}
+    %
+  \begingroup
+  \renewcommand\arraystretch{1.33}
+  \left\{ \begin{array}{@{}l@{}}
+    \pi_1 / \pi_2  = r_{1,2}\\
+    \pi_2 / \pi_3  = r_{2,3}\\
+    \hspace*{1cm}\vdots \\
+    \pi_{J-1} / \pi_{J}  = r_{J-1,J}\\
+    \pi_1 + \ldots + \pi_J  = 1
+     \end{array} \right.
+  \endgroup
+    \Rightarrow
+    %
+  \begingroup
+  \renewcommand\arraystretch{1.33}
+  \left\{ \begin{array}{@{}l@{}}
+    \pi_1 = r_{1,2}\pi_2\\
+      \pi_2 = r_{2,3}\pi_3\\
+      \hspace*{1cm}\vdots\\
+      \pi_{J-1} = r_{J-1,J}\pi_J\\
+      \pi_1+\ldots+\pi_J = 1
+     \end{array} \right.
+  \endgroup
+    \Rightarrow
+    %
+  \begingroup
+  \renewcommand\arraystretch{1.33}
+  \left\{ \begin{array}{@{}l@{}}
+    \pi_1 - r_{1,2}\pi_2 = 0\\
+    \pi_2 - r_{2,3}\pi_3 = 0\\
+    \hspace*{1cm}\vdots\\
+    \pi_{J-1} - r_{J-1,J}\pi_J = 0\\
+    \pi_1+\ldots+\pi_J = 1
+     \end{array} \right.
+  \endgroup
+\end{equation}\]</span></p>
+<p>with <span class="math inline">\(J\)</span> unknowns and the matrix representation</p>
+<p><span class="math display">\[\begin{equation}
+    \begin{aligned}
+    \underbrace{
+      \begin{pmatrix}
+      1 &amp; -r_{1,2} &amp; 0 &amp; \cdots &amp; 0 &amp; 0\\
+      0 &amp; 1 &amp; -r_{2,3} &amp; \cdots &amp; 0 &amp; 0\\
+      \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots &amp; \vdots \\
+      0 &amp; 0 &amp; 0 &amp; \cdots &amp; 1 &amp; -r_{J-1,J}\\
+      1 &amp; 1 &amp; 1 &amp; \cdots &amp; 1 &amp; 1
+      \end{pmatrix}
+     }_{=\mathbf{A}\in\mathbb{R}^{J\times J}}
+      \begin{pmatrix}
+      \pi_1 \\
+      \pi_2 \\
+      \vdots \\
+      \pi_{J-1}\\
+      \pi_J
+      \end{pmatrix}
+      =
+      \begin{pmatrix}
+      0 \\
+      0 \\
+      \vdots\\
+      0 \\
+      1
+      \end{pmatrix}
+    \end{aligned}
+\end{equation}\]</span></p>
+<p>which can be solved since <span class="math inline">\(\mathbf{A}\in\mathbb{R}^{J\times J}\)</span> clearly has full rank <span class="math inline">\(J\)</span>. The solution <span class="math inline">\((\pi_1,\ldots,\pi_J)^{\top}=\mathbf{A}^{-1}(0, \ldots, 0, 1)^{\top}\)</span>, in turn uniquely defines <span class="math inline">\(x\)</span> through its barycentric coordinate representation <span class="math inline">\(x=(\pi_1,\ldots,\pi_J)=\sum_{j=1}^J\pi_j v_j\in\Delta^{J-1}\)</span>.</p>
+<p>We conclude the general case for arbitrary <span class="math inline">\(J\)</span> with two remarks. First, the barycentric coordinate ratios do not need to be extracted for subsequent components. It is sufficient if <span class="math inline">\(J-1\)</span> independent ratios are calculated to determine <span class="math inline">\(J-1\)</span> unknowns, while the last unknown is solved through the constraint <span class="math inline">\(\sum\pi_j=1\)</span>. What is more, this implies that any unknown can be solved through the sum-to-one constraint, and it does not need to be <span class="math inline">\(\pi_J\)</span>. After all, the ordering of the components <span class="math inline">\(1,\ldots,J\)</span> is arbitrary and we can always re-arrange indices to match the notation in the proof above.</p>
+<p>Second, it is not necessary to use the projections onto all facets <span class="math inline">\(\sigma_{-j}\)</span>. In the argumentation above, only <span class="math inline">\(J-1\)</span> independent ratios (and the sum-to-one constraint) are required to recover the original point <span class="math inline">\(x\)</span>. <span class="math inline">\(J-1\)</span> independent ratios can, in turn, be extracted from the projections on exactly two different facets: From the first projection <span class="math inline">\(\psi_n(x)=(\tilde{\pi}_1, \ldots,\tilde{\pi}_{n-1},\tilde{\pi}_{n+1},\ldots,\tilde{\pi}_J)\)</span> onto the facet <span class="math inline">\(\sigma_{-n}\)</span>, all necessary ratios except a ratio <span class="math inline">\(\frac{\pi_n}{\pi_{m}}, m\neq n\)</span> involving <span class="math inline">\(\pi_n\)</span> can be extracted. However, the “final” independent ratio including <span class="math inline">\(\pi_n\)</span> to solve for <span class="math inline">\(\pi_n\)</span> can be extracted from the projection <span class="math inline">\(\psi_m(x)\)</span> onto the other facet <span class="math inline">\(\sigma_{-m}\)</span> if <span class="math inline">\(n\neq m\)</span>. This means that the projections onto only two facets must always suffice to recover the original point <span class="math inline">\(x\)</span> regardless of the dimensionality <span class="math inline">\(J\)</span>.</p>
+<div style="text-align: right">
+<span class="math inline">\(\square\)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
+<section id="set-of-points" class="level3">
+<h3 class="anchored" data-anchor-id="set-of-points">Set of Points</h3>
+<p>We previously treated the simplex projection <span class="math inline">\(\phi\)</span> of a single point <span class="math inline">\(x\in\Delta\)</span> and proved that <span class="math inline">\(\phi\)</span> is a bijection. The next step generalizes the simplex projection to a of <span class="math inline">\(L\)</span> points <span class="math inline">\(\{x^{(1)}, \ldots, x^{(L)}\}\equiv\{x^{(l)}\}_{l=1}^L\)</span> with shorthand notation <span class="math inline">\(\{x^{(l)}\}\)</span> when the context is clear. One might be tempted to assume that we can simply apply <span class="math inline">\(\phi\)</span> to each point in the set individually and preserve the bijection, and this is technically true—under one critical assumption, which does not hold in practical applications: We do not know which projections match to the same original point <span class="math inline">\(x\)</span> in the preimage, as explained more technically in the following.</p>
+<p>For each single point <span class="math inline">\(x^{(l)}\)</span>, we can calculate <span class="math inline">\(\phi(x^{(l)})\)</span> according to , and we can readily apply to recover <span class="math inline">\(x^{(l)} = \phi^{-1}\big(\phi(x^{(l)})\big)\)</span>. illustrates this for the tetrahedron (<span class="math inline">\(J=4\)</span>). Now consider two points <span class="math inline">\(x^{(n)}, x^{(m)}\)</span> from the preimage, and their projections <span class="math inline">\(\phi(x^{(n)}), \phi(x^{(m)})\)</span>. In order to recover the original points with , we need the barycentric coordinate ratios of each image, which is where the critical assumption becomes salient. On each facet <span class="math inline">\(\sigma_{-j}\)</span>, we now have projections, namely <span class="math inline">\(\psi_j(x^{(n)})\)</span> and <span class="math inline">\(\psi_j(x^{(m)})\)</span>. However, the two projections are indistinguishable, and it is not clear which one arose from <span class="math inline">\(x^{(n)}\)</span> and which one arose from <span class="math inline">\(x^{(m)}\)</span>. Yet, the argumentation in builds on using coordinate ratios of an original point from its different projections. Therefore, the previous proof cannot be readily applied to a set of images when the (i.e., which projections arose from which original point) are unknown.</p>
+<p>As an extension to , we define a function <span class="math inline">\(\Phi\)</span> which applies the simplex projection <span class="math inline">\(\phi\)</span> to each element of a of <span class="math inline">\(L\)</span> points <span class="math inline">\(\{x^{(l)}\}\)</span>, <span class="math display">\[\begin{equation}
+    \Phi
+        \left(
+            \left\{
+                x^{(l)}
+            \right\}
+        \right) =
+        \left\{
+                \phi(x^{(l)})
+        \right\}
+,
+\end{equation}\]</span> where we use the shorthand set notation <span class="math inline">\(\{\cdot\}\)</span> for brevity. If the point labels <span class="math inline">\(l=1,\ldots, L\)</span> are known for all images (up to permutation), the function <span class="math inline">\(\Phi\)</span> will be invertible as well because <span class="math inline">\(\phi^{-1}\)</span> is invertible: <span class="math display">\[\begin{equation}\label{eq:proof-sets-equality-theo1}
+    \begin{aligned}
+        \Phi^{-1}
+        \left(
+            \left\{
+                \phi(x^{(l)})
+            \right\}
+        \right)
+        &amp;=  
+        \left\{
+            \phi^{-1}\left(
+                \phi(x^{(l)})
+            \right)
+        \right\}
+        =
+        \left\{
+            x^{(l)}
+        \right\}
+        .
+    \end{aligned}
+\end{equation}\]</span></p>
+<p>Consequently, it remains to be proven that the labels across projections onto different facets are unique (up to permutations of labels) such that the problem can be reduced to . Since performing a perspective projection on a point <span class="math inline">\(\Delta^0 (J=1)\)</span> is not sensible and a perspective projection of points on a line <span class="math inline">\(\Delta^1 (J=2)\)</span> would project all points to a single renormalized coordinate <span class="math inline">\(\tilde{\pi}_j=1\)</span>, we formulate the following theorem for <span class="math inline">\(J\geq 3\)</span>.</p>
+<div id="thm-unlabeled-points" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Bijective simplex projection for sets of points)</strong></span> Let <span class="math inline">\(\Delta\)</span> be a <span class="math inline">\((J-1)\)</span>-simplex (<span class="math inline">\(J\geq 3\)</span>), <span class="math inline">\(\mathcal{K}=\left\{\sigma_{-j}\right\}_{j=1}^J\)</span> be a pure simplicial complex of the facets of <span class="math inline">\(\Delta\)</span>, <span class="math inline">\(\phi\)</span> a bijective mapping () with inverse function <span class="math inline">\(\phi^{-1}\)</span> and <span class="math inline">\(\psi_j(x)\)</span> the perspective projection of <span class="math inline">\(x\)</span> onto <span class="math inline">\(\sigma_{-j}\)</span> about the vertex <span class="math inline">\(v_j\)</span>. Further, let <span class="math inline">\(\mathrm{Img}_{\phi}\)</span> denote the image of <span class="math inline">\(\phi\)</span>, as described in the Appendix. Then, <span class="math display">\[\begin{equation}\label{eq:bijection-Delta-K-set}
+    \begin{aligned}
+    \Phi: \left\{\Delta^{(l)}\right\}_{l=1}^L &amp;\rightarrow \left\{
+    \mathrm{Img}_{\phi}(\Delta^{(l)})
+    \right\}_{l=1}^L\\
+    \left\{x^{(l)}\right\}_{l=1}^L &amp; \mapsto
+        \left\{
+            \phi\left(
+                x^{(l)}
+            \right)
+        \right\}_{l=1}^L
+\end{aligned}
+\end{equation}\]</span> is a bijective mapping.</p>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Proof of <a href="#thm-unlabeled-points" class="quarto-xref">Theorem&nbsp;2</a> (click to unfold)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="rouché-capelli-theorem" class="level4">
+<h4 class="anchored" data-anchor-id="rouché-capelli-theorem">Rouché-Capelli Theorem</h4>
+<p>One critical argument in the proof builds on a corollary of the Rouch'{e}-Capelli theorem , which we will denote in the following: “In an euclidean space <span class="math inline">\(\mathbb{R}^{J-1}\)</span>, <span class="math inline">\(J\)</span> hyperplanes <span class="math inline">\(Z_1, \ldots, Z_J\)</span> can have zero, one, or infinitely many concurrencies.”</p>
+<p>The <span class="math inline">\(J\)</span> hyperplanes are defined by <span class="math inline">\(Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1} = c_j\)</span>, and the concurrency (intersection of hyperplanes simultaneously) is the solution to the following system of equations: <span class="math display">\[\begin{equation}
+\underbrace{
+    \begin{pmatrix}
+        a_{1,1} &amp; \cdots &amp; a_{1, J-1} \\
+        \vdots &amp; \ddots &amp; \vdots \\
+        a_{J,1} &amp; \cdots &amp; a_{J, J-1} \\
+    \end{pmatrix}
+}_{\mathbf{A}
+\in\mathbb{R}^{J\times (J-1)}
+}
+    \begin{pmatrix}
+        x_1 \\
+        \vdots \\
+        x_{J-1}
+    \end{pmatrix}
+    =
+    \underbrace{\begin{pmatrix}
+        b_1\\
+        \vdots\\
+        b_J
+    \end{pmatrix}
+    }_{b
+    \in\mathbb{R}^{J}
+    }
+\end{equation}\]</span></p>
+<p>The Rouch'{e}-Capelli theorem states that this system has</p>
+<ol type="i">
+<li>no solution, if and only if the rank of its coefficient matrix <span class="math inline">\(\mathbf{A}\)</span> equals the rank of the augmented matrix <span class="math inline">\([\mathbf{A}|b]\)</span>;</li>
+<li>exactly one solution if and only if <span class="math inline">\(\mathrm{Rank}(\mathbf{A})=J-1\)</span>; and</li>
+<li>infinitely many solutions otherwise.</li>
+</ol>
+</section>
+<section id="proof-of-the-theorem" class="level4">
+<h4 class="anchored" data-anchor-id="proof-of-the-theorem">Proof of the Theorem</h4>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>The proof will show that <span class="math inline">\(\Phi\)</span> is a bijective mapping by showing that there is exactly one solution to label the projections onto the facets (up to permutations), and reduce the problem to .</p>
+<p>As in <a href="#thm-matching-points" class="quarto-xref">Theorem&nbsp;1</a>, we can repeatedly remove components from all projections and re-normalize the coordinates to extract numerical values <span class="math inline">\(\frac{\pi_n}{\pi_m}=r_{n,m}\)</span> for the ratios of all pairs of barycentric coordinates of all projections. Each ratio <span class="math inline">\(r_{n, m}^{(l)}=\frac{\pi_n^{(l)}}{\pi_m^{(l)}}\)</span> implies a hyperplane <span class="math inline">\(H\in\mathbb{R}^{J-2}\)</span> through the points <span class="math inline">\((\tilde{\pi}_n^{(l)}, \tilde{\pi}_m^{(l)})\)</span> and the set of points <span class="math inline">\(\{v_{a}\}_{a\notin\{n, m\}}\)</span> of all vertices of the <span class="math inline">\((J-1)\)</span>-simplex which have been marginalized out to obtain the ratio <span class="math inline">\(r_{n, m}^{(l)}\)</span> (see ). All points <span class="math inline">\(h\in H\cap\Delta\)</span> in the union of <span class="math inline">\(H\)</span> and the simplex are compatible with the point <span class="math inline">\((\tilde{\pi}_n^{(l)}, \tilde{\pi}_m^{(l)})\)</span> on the edge <span class="math inline">\(\overline{v_nv_m}\)</span>: <span class="math display">\[\forall h\in H\cap \Delta: h\sim(\tilde{\pi}_n^{(l)}, \tilde{\pi}_m^{(l)}).\]</span></p>
+<p>Finding intersections of hyperplanes in the simplex <span class="math inline">\(\Delta\)</span> is equivalent to finding points which are compatible with the ratios inducing these hyperplanes. Consequently, finding a point where hyperplanes induced by <span class="math inline">\(J\)</span> consecutive ratios forming a cycle (i.e., <span class="math inline">\(r_{1,2},\ldots,r_{J-1, J}, r_{J, 1}\)</span>) intersect is equivalent to identifying an original point in the preimage which is compatible with all points on the edges with barycentric coordinates of the ratios (see for an illustration with <span class="math inline">\(J=3\)</span>). On each linearly independent edge <span class="math inline">\(\overline{v_1v_2},\ldots,\overline{v_Jv_1}\)</span>, there is one extracted ratio (and consequently one implied hyperplane) per original point <span class="math inline">\(x^{(l)}\)</span>. Thus, there is a total of <span class="math inline">\(L\)</span> hyperplanes on each linearly independent edge, implied by the set of original points. The hyperplane implied by the ratio <span class="math inline">\(r_{n, m}^{(l)}\)</span> will be referred to as <span class="math inline">\(H_{n,m}^{(l)}\)</span>. The resulting structure of hyperplanes follows as</p>
+<p><span id="eq-sets-of-points-hyperplane-definition"><span class="math display">\[
+\underbrace{\{H_{1,2}^{(1)}, \ldots, H_{1,2}^{(L)}\}}_{\text{edge}\;v_1v_2},
+\ldots,
+\underbrace{\{H_{J-1,J}^{(1)}, \ldots, H_{J-1,J}^{(L)}\}}_{\text{edge}\;v_{J-1}v_J},
+\underbrace{\{H_{J,1}^{(1)}, \ldots, H_{J,1}^{(L)}\}}_{\text{edge}\;v_{J}v_1}
+\tag{2}\]</span></span></p>
+<p>when we group the <span class="math inline">\(L\)</span> hyperplanes implied by a ratio <span class="math inline">\(r_{n, m}\)</span> in a set, for a total of <span class="math inline">\(J\)</span> sets of <span class="math inline">\(L\)</span> hyperplanes each. Finding consistent original points is now equivalent to finding concurrencies of <span class="math inline">\(J\)</span> hyperplanes, each from one of the <span class="math inline">\(J\)</span> sets above, see . What is more, no two <span class="math inline">\(J\)</span> hyperplanes in such an arrangement can be parallel or equal because of the geometry of the simplex. However, pairs of hyperplanes within one of the <span class="math inline">\(J\)</span> sets may be equal, yet they cannot be parallel and unequal (see ). It remains to be proven that there are exactly <span class="math inline">\(L\)</span> concurrencies where <span class="math inline">\(J\)</span> hyperplanes—one of each of the sets in <a href="#eq-sets-of-points-hyperplane-definition" class="quarto-xref">Equation&nbsp;2</a>—intersect.</p>
+<p><strong>Statement:</strong> “There are exactly <span class="math inline">\(L\)</span> concurrencies between the <span class="math inline">\(J\)</span> sets of <span class="math inline">\(L\)</span> hyperplanes each, implied by the ratios of <span class="math inline">\(L\)</span> images according to <a href="#eq-sets-of-points-hyperplane-definition" class="quarto-xref">Equation&nbsp;2</a>.” We prove this statement by first arguing that there are at least <span class="math inline">\(L\)</span> concurrencies, and then show that there cannot be more than <span class="math inline">\(L\)</span> concurrencies. shows an example where the statement is clearly true. Below, we prove that it holds for all possible cases with arbitrary <span class="math inline">\(L\)</span> and <span class="math inline">\(J\)</span>.</p>
+<section id="case-i-there-are-at-least-l-concurrencies." class="level4">
+<h4 class="anchored" data-anchor-id="case-i-there-are-at-least-l-concurrencies."><strong>Case I: There are at least <span class="math inline">\(L\)</span> concurrencies.</strong></h4>
+<p>Every preimage point <span class="math inline">\(x^{(l)}\)</span> has a consistent ratio representation, and thus there must clearly be a concurrency at each point <span class="math inline">\(x^{(l)}\)</span>, resulting in at least <span class="math inline">\(L\)</span> concurrencies.</p>
+</section>
+<section id="case-ii-there-are-not-more-than-l-concurrencies." class="level4">
+<h4 class="anchored" data-anchor-id="case-ii-there-are-not-more-than-l-concurrencies."><strong>Case II: There are not more than <span class="math inline">\(L\)</span> concurrencies.</strong></h4>
+<p>We prove this by contradiction. Assume there was an additional <span class="math inline">\(L+1^{\text{st}}\)</span> concurrency <span class="math inline">\(z\notin\{x^{(l)}\}\)</span>. This means that <span class="math inline">\(J\)</span> hyperplanes—one originating from each edge—intersect at the point <span class="math inline">\(z\in\Delta\)</span>. Call these hyperplanes <span class="math inline">\(Z_1, \ldots, Z_J\)</span> with <span class="math inline">\(Z_j \in \{ H_{j,j+1}^{(l)} \}\)</span> for <span class="math inline">\(j \neq J\)</span> and <span class="math inline">\(Z_J \in \{ H_{J,1}^{(l)} \}\)</span> for <span class="math inline">\(j = J\)</span> as in . Each of the <span class="math inline">\(L\)</span> concurrencies <span class="math inline">\(\{x^{(l)}\}\)</span>, which must exist as argued in , has a set of <span class="math inline">\(J\)</span> corresponding hyperplanes which intersect at <span class="math inline">\(x^{(l)}\)</span> by definition. Because one hyperplane of each set is induced by each original point, the mapping from an original point (one of the <span class="math inline">\(L\)</span> concurrencies) to <span class="math inline">\(J\)</span> hyperplanes (one of each set of <span class="math inline">\(L\)</span> concurrencies <span class="math inline">\(\{x^{(l)}\}\)</span> as above) is surjective (exhaustive) on the set of all <span class="math inline">\(J\cdot L\)</span> hyperplanes. Consequently, each of the hyperplanes <span class="math inline">\(Z_1, \ldots, Z_J\)</span>, which intersect at the “additional” concurrency <span class="math inline">\(z\)</span>, has a corresponding “established” concurrency with <span class="math inline">\(J-1\)</span> other hyperplanes from the set of <span class="math inline">\(L\)</span> concurrencies from above. For example, if <span class="math inline">\(Z_1 = H_{1,2}^{(l')}\)</span>, then <span class="math inline">\(x^{(l')} \in \{ x^{(l)} \}\)</span> is an established concurrency corresponding to <span class="math inline">\(Z_1\)</span>. The phrase “established” emphasizes that we already know about these <span class="math inline">\(L\)</span> concurrencies through . Now consider these <span class="math inline">\(J\)</span> established concurrencies which correspond to <span class="math inline">\(Z_1, \ldots ,Z_J\)</span>, which we call <span class="math inline">\(\hat{x}^{(1)}, \ldots, \hat{x}^{(J)}\)</span>, all in <span class="math inline">\(\{x^{(l)}\}\)</span>. One of the following cases must occur:</p>
+<ol type="a">
+<li><p><strong>At least one pair of established concurrencies is equal</strong>, <span class="math inline">\(\exists n,m\in\{1,\ldots,J\}^2, n\neq m: \hat{x}^{(n)} = \hat{x}^{(m)}\)</span>. This means that the hyperplanes <span class="math inline">\(Z_n\)</span> and <span class="math inline">\(Z_m)\)</span> intersect at <span class="math inline">\(\hat{x}^{(n)}=\hat{x}^{(m)}\)</span>, and by definition of <span class="math inline">\(z\)</span> they also intersect at <span class="math inline">\(z\)</span>. The corollary on the Rouch'{e}-Capelli theorem implies that either <span class="math inline">\(z=\hat{x}^{(n)}=\hat{x}^{(m)}\in\{x^{(l)}\}\)</span> (contradiction; <span class="math inline">\(z\)</span> is assumed to be a concurrency beyond <span class="math inline">\(\{x^{(l)}\}\)</span>) or the two hyperplanes <span class="math inline">\(Z_n\)</span> and <span class="math inline">\(Z_m\)</span> are equal (contradiction).</p></li>
+<li><p><strong>All established concurrencies are different from each other</strong>, <span class="math inline">\(\hat{x}^{(n)}\neq \hat{x}^{(m)}\;\forall n, m\in\{1,\ldots,J\}^2,n\neq m\)</span>. The fact that <span class="math inline">\(z=(\zeta_1,\ldots,\zeta_J)\)</span> shares a hyperplane with each of the <span class="math inline">\(J\)</span> established concurrencies <span class="math inline">\(\hat{x}^{(1)}, \ldots, \hat{x}^{(J)}\)</span>—each with barycentric coordinate representation <span class="math inline">\((\hat{\pi}_1^{(j)}, \ldots, \hat{\pi}_J^{(j)})\)</span>—translates to the ratio equalities in barycentric coordinates <span class="math display">\[
+\frac{\zeta_1}{\zeta_2} = \frac{\hat{\pi}^{(1)}_1}{\hat{\pi}^{(1)}_2},\quad
+\frac{\zeta_2}{\zeta_3} = \frac{\hat{\pi}^{(2)}_2}{\hat{\pi}^{(2)}_3},\quad
+\ldots,\quad
+\frac{\zeta_J}{\zeta_1} = \frac{\hat{\pi}^{(J)}_J}{\hat{\pi}^{(J)}_1}.
+\]</span> Generalized Ceva’s theorem guarantees that <span class="math display">\[
+\frac{\zeta_1}{\zeta_2}\,\frac{\zeta_2}{\zeta_3}\cdots\frac{\zeta_J}{\zeta_1}=1
+\]</span> because <span class="math inline">\(z\)</span> is a concurrency by definition. The inverse direction of generalized Ceva’s theorem states that the hyperplanes <span class="math inline">\(Z_1, \ldots, Z_J\)</span> have a concurrency <span class="math inline">\(\hat{x}\)</span> since the following equality holds: <span class="math display">\[
+\frac{\hat{\pi}^{(1)}_1}{\hat{\pi}^{(1)}_2}\,
+\frac{\hat{\pi}^{(2)}_2}{\hat{\pi}^{(2)}_3}
+\cdots
+\frac{\hat{\pi}^{(J)}_J}{\hat{\pi}^{(J)}_1}=1.
+\]</span> It follows from the corollary of the Rouch'{e}-Capelli theorem that either <span class="math inline">\(\hat{x}=z\)</span> (contradiction) or that at least two of the hyperplanes are equal (contradiction).</p></li>
+</ol>
+This concludes the proof.
+<div style="text-align: right">
+<span class="math inline">\(\square\)</span>
+</div>
+</section>
+</div>
+</section>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+TO DO: Format the pseudocode algorithm, see <a href="https://github.com/leovan/quarto-pseudocode">https://github.com/leovan/quarto-pseudocode</a>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-alg-title="Algorithm" data-line-number="true" data-indent-size="1.2em" data-line-number-punc=":" data-no-end="false" data-pseudocode-index="1" data-comment-delimiter="//">
+<div class="pseudocode">
+\begin{algorithm} \caption{Marginal density approximation} \begin{algorithmic} \REQUIRE{Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$} \ENSURE{Approximate marginal density $\hat{p}(z)$} \FOR{$\sigma_{-j}\in\K$} \FOR{$z\in\subdivision(\sigma_{-j})$} \STATE{$s = \overline{z v_j}$} \STATE{$\hat{p}(z)=0$} \FOR{$m=1,\ldots, M$} \STATE{$x_m\leftarrow z + \frac{s}{M}$}\hfill\COMMENT{equidistant points on $s$} \STATE{$\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$} \ENDFOR \ENDFOR \ENDFOR \RETURN $\hat{p}(z)$ \end{algorithmic} \end{algorithm}
+</div>
+</div>
+</section>
+<section id="continuous-probability-densities" class="level3">
+<h3 class="anchored" data-anchor-id="continuous-probability-densities">Continuous Probability Densities</h3>
+<p>In what follows, we will extend our method from discrete sets of points to continuous densities, such as probability density functions over the simplex <span class="math inline">\(\Delta\)</span>. Given a density <span class="math inline">\(p(x)\)</span> defined over the simplex <span class="math inline">\(\Delta\)</span>, we can approximate the (multivariate) marginal densities of the projections in the simplices of the simplicial complex <span class="math inline">\(\mathcal{K}\)</span> numerically (see Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span>). This approach is conceptually similar to pre-integration for each component, but offers a strong statistical foundation through the principled statistically equivalent operation of . Furthermore, the simplex projection method is information-preserving in finite dimensions (as opposed to pre-integration in general), as shown in and .</p>
+<p>Let <span class="math inline">\(\Delta\)</span> be a <span class="math inline">\((J-1)\)</span>-simplex, <span class="math inline">\(p(x)\)</span> be a probability density function over <span class="math inline">\(\Delta\)</span>, and <span class="math inline">\(\mathcal{K}=\left\{\sigma_{-j}\right\}_{j=1}^J\)</span> be a pure simplicial complex of the facets of <span class="math inline">\(\Delta\)</span>. For each simplex <span class="math inline">\(\sigma_{-j}\in\mathcal{K}\)</span>, we define a node-based subdivision <span class="math inline">\(\mathcal{S}(\sigma_{-j})\)</span> of depth <span class="math inline">\(D\)</span>.</p>
+<p>The depth <span class="math inline">\(D\)</span> controls the number of nodes and thus the resolution of the approximated marginal density. For each node <span class="math inline">\(z\)</span> of the subdivision <span class="math inline">\(\mathcal{S}(\sigma_{-j})\)</span>, we construct a line segment to the opposing vertex <span class="math inline">\(s=\overline{z v_j}\)</span> in the space of the original higher-order simplex <span class="math inline">\(\Delta\)</span>. Then, we choose <span class="math inline">\(M\)</span> equidistant points <span class="math inline">\((x_m)_{m=1}^M, x_m\in\mathbb{R}^{J-1}\)</span> on the line segment <span class="math inline">\(s\)</span> and evaluate the density <span class="math inline">\(p(x_m)\)</span> for each point <span class="math inline">\(x_m\)</span>. The line integral of <span class="math inline">\(p(x)\)</span> along <span class="math inline">\(s\)</span> is then approximated by <span class="math display">\[\begin{equation}\label{eq:line-integral-approximation}
+    \int_{s} p(x)\mathrm{d}x = \lim_{M\rightarrow \infty}
+    \sum\limits_{m=1}^{M} p(x_m)\,\frac{|s|}{M}
+\end{equation}\]</span> with integration step size <span class="math inline">\(\delta = |s|/M\)</span>, where <span class="math inline">\(|s|\)</span> is the length of the line segment <span class="math inline">\(s\)</span>. In the implementation, <span class="math inline">\(M\)</span> is finite and acts as a hyperparameter which controls the accuracy of the approximation in through the number of equidistant points <span class="math inline">\(x_m\)</span>.</p>
+<p>In the software implementation, the density at the bounds <span class="math inline">\(m=1\)</span> and <span class="math inline">\(m=M\)</span> in might be undefined. We tackle this by setting <span class="math inline">\(p(x_1)=p(x_M)=0\)</span>, and the de-facto effect of this practical adjustment vanishes for increasing accuracy <span class="math inline">\(M\)</span>.</p>
+<section id="proof-of-concept-with-an-analytic-density" class="level4">
+<h4 class="anchored" data-anchor-id="proof-of-concept-with-an-analytic-density">Proof-of-Concept with an Analytic Density</h4>
+<p>We validate our approximation for a Dirichlet distribution which has known analytic marginal distributions as a ground-truth. For <span class="math inline">\((\pi_1, \ldots, \pi_J)\in\Delta^{J-1}, J\geq2\)</span>, the Dirichlet distribution <span class="math inline">\(\mathrm{Dir}(\alpha_1,\ldots,\alpha_J)\)</span> has the probability density function <span class="math display">\[\begin{equation}
+\begin{aligned}
+    p(\pi_1,\ldots,\pi_J\,|\,\alpha_1,\ldots,\alpha_J) &amp;= \mathbf{B}(\alpha_1,\ldots,\alpha_J)^{-1}\,\prod\limits_{j=1}^J\pi_j^{\alpha_j-1}, \alpha_j&gt;0\,\forall\,j=1,\ldots,J\;\;\text{with}\\
+    \mathbf{B}(\alpha_1,\ldots,\alpha_J)&amp;=\left(\prod\limits_{j=1}^{J}\Gamma(\alpha_j)\right)\,\Gamma\left(\prod\limits_{j=1}^J \alpha_j\right)^{-1},
+\end{aligned}
+\end{equation}\]</span> where <span class="math inline">\(\Gamma\)</span> denotes the Gamma function. The Dirichlet distribution is a multivariate generalization of the Beta distribution . To ease the illustration, we study a Dirichlet distribution <span class="math inline">\(\mathrm{Dir}(\alpha_1, \alpha_2,\alpha_3)\)</span> over the 2-simplex <span class="math inline">\(\Delta^2\)</span> with parameter vector <span class="math inline">\((\alpha_1, \alpha_2, \alpha_3)=(2,5,3)\)</span>. This implies the following analytic multivariate marginal distributions , which we will use as a ground-truth to benchmark our approximation against: <span class="math display">\[\begin{equation}
+    \begin{aligned}
+        (\pi_1, \pi_2) &amp;\sim \mathop{\mathrm{Dir}}(\alpha_1, \alpha_2)=\mathop{\mathrm{Dir}}(2, 5),\\
+        (\pi_1, \pi_3) &amp;\sim \mathop{\mathrm{Dir}}(\alpha_1, \alpha_3)=\mathop{\mathrm{Dir}}(2, 3),\\
+        (\pi_2, \pi_3) &amp;\sim \mathop{\mathrm{Dir}}(\alpha_2, \alpha_3)=\mathop{\mathrm{Dir}}(5, 3).
+    \end{aligned}
+\end{equation}\]</span> illustrates that the proposed approximation technique yields essentially equal results to the analytic marginal distributions for a subgrid depth of <span class="math inline">\(D=10\)</span> (<span class="math inline">\(2^{10}=1024\)</span> evaluation nodes on each edge) and an integration accuracy of <span class="math inline">\(M=1000\)</span>. For the practical purpose of visualizing (probability) densities over higher-order simplices in a lower-order canvas, this shows that (i) the density information can be preserved through the simplex projection; and (ii) the necessary numerical approximation does not introduce substantial inaccuracies.</p>
+</section>
+<section id="recursive-marginal-approximations-are-possible-through-interpolation" class="level4">
+<h4 class="anchored" data-anchor-id="recursive-marginal-approximations-are-possible-through-interpolation">Recursive Marginal Approximations are Possible through Interpolation</h4>
+<p>For <span class="math inline">\(J=4\)</span> dimensions, the full-order simplex <span class="math inline">\(\Delta\)</span> is a tetrahedron. Accordingly, the <span class="math inline">\(3\)</span>-variate marginal density distributions are defined over the <span class="math inline">\(2\)</span>-simplices (triangles) at the facets of the tetrahedron, and approximated as described above. In theory, this algorithm could be carried out again in order to obtain <span class="math inline">\(2\)</span>-variate marginal distributions along the edges of each <span class="math inline">\(2\)</span>-simplex. However, Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span> assumes that we can readily evaluate the density <span class="math inline">\(p(x)\)</span> at any point <span class="math inline">\(x\)</span> in the <span class="math inline">\(2\)</span>-simplex (triangle). This is not generally the case because we only have access to a numeric density for the subgrid <span class="math inline">\(Z\subseteq\Delta\)</span> which we approximated via Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span>.</p>
+<p>We address the problem of accessing a density <span class="math inline">\(p(x)\)</span> for arbitrary <span class="math inline">\(x\)</span> through a straightforward barycentric interpolation, as explained in the following. First, we apply Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span> with the recursion step <span class="math inline">\(\Delta\leftarrow\sigma_{-j}\)</span> and proceed as usual until we need to evaluate the density <span class="math inline">\(p(x_m)\)</span> at the node <span class="math inline">\(x_m\)</span>. Because we do not generally have access to the density <span class="math inline">\(p(x_m)\)</span>, we approximate <span class="math inline">\(p(x_m)\)</span> with an interpolation from its <span class="math inline">\(J-1\)</span> nearest neighbors <span class="math inline">\(z_1, \ldots, z_{J-1}\)</span> (i.e., the vertices of the enclosing <span class="math inline">\(J-2\)</span> simplex of the subdivision, see ). The notation <span class="math inline">\(z_j\)</span> emphasizes that the density <span class="math inline">\(\hat{p}(z_j)\)</span> of these vertices has already been approximated through the previous iteration of Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span>.</p>
+<p>With <span class="math inline">\(\lambda_1, \ldots, \lambda_{J-1}\)</span> as the barycentric coordinates of <span class="math inline">\(x_m\)</span> with reference vertices <span class="math inline">\(z_1, \ldots, z_{J-1}\)</span>, we obtain the linear barycentric interpolation <span class="math inline">\(\hat{p}(x_m) = \sum_{j=1}^{J-1}\lambda_j\hat{p}(z_j)\)</span> for the probability density of <span class="math inline">\(x_m\)</span>. More sophisticated interpolation schemes are possible as well but do not fall within the scope of this paper. This process can be repeated recursively (with recursion <span class="math inline">\(\Delta\leftarrow\sigma_{-j}\)</span>) until <span class="math inline">\(\Delta=\Delta^1\)</span> (line segment) in Algorithm <span class="math inline">\(\ref{alg:simplex-marginal-density-numeric}\)</span>. The result of applying the recursive approximation technique to an arbitrary density over the <span class="math inline">\(3\)</span>-simplex is illustrated in .</p>
+</section>
+</section>
+</section>
+<section id="conclusion-1" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="conclusion-1"><span class="header-section-number">5</span> Conclusion</h2>
+<p>Current visualization techniques for compositional data on a 2D canvas are either (i) limited to 3D data (simplex plots); or (ii) they fail to express structures across dimensions, such as correlations (parallel coordinates, stacked plots). In this work, we overcome the limited expressiveness (i) of simplex plots while preserving the structure capturing property (ii). Exploiting the inherent structure of compositional data, we proposed a mathematically sound perspective projection approach which corresponds to visualizing marginal densities in statistics. The resulting visualization enjoys the remarkable property that the original joint data distribution can be reconstructed without loss of information, which we proved mathematically. While our mathematical proof holds for an arbitrary number of dimensions, we focused our novel visualization method to representing 4D compositional data on a 2D canvas. Future research can aim to push the envelope and propose structure- and information-preserving visualizations for higher-dimensional compositional data on a low-dimensional canvas.</p>
+</section>
+
 <section id="references" class="level2 unnumbered">
 <h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-simkin2002read" class="csl-entry" role="listitem">
-Simkin, Mikhail V, and Vwani P Roychowdhury. 2002. <span>“Read Before You Cite!”</span> <em>arXiv Preprint Cond-Mat/0212043</em>. <a href="https://arxiv.org/pdf/cond-mat/0212043">https://arxiv.org/pdf/cond-mat/0212043</a>.
-</div>
+<div id="refs" role="list">
+
 </div>
 </section>
+<section id="appendix-details-and-proofs" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="appendix-details-and-proofs">Appendix: Details and Proofs</h2>
+<section id="app:image-domain" class="level3">
+<h3 class="anchored" data-anchor-id="app:image-domain">Image of the Perspective Projection <span class="math inline">\(\phi\)</span></h3>
+<section id="the-is-compatible-with-relation-sim" class="level4">
+<h4 class="anchored" data-anchor-id="the-is-compatible-with-relation-sim">The “is compatible with” Relation <span class="math inline">\(\sim\)</span></h4>
+<p>Let <span class="math inline">\(\mathcal{K}=\left\{\sigma_1,\ldots,\sigma_J\right\}\)</span> be a pure simplicial complex, and <span class="math inline">\(I(\sigma_j)\)</span> be the set of vertex indices of the simplex <span class="math inline">\(\sigma_j\)</span>. The <span class="math display">\[\begin{equation}
+                \begin{aligned}
+            \sim\;=
+            \Big\{ (A, B)\;\Big\vert\;&amp;
+            A=(\alpha_1, \ldots, \alpha_n)\in\sigma_1,
+            B=(\beta_1, \ldots, \beta_m)\in\sigma_2,\\
+            &amp;\text{for}\; U = I(\sigma_1)\cap I(\sigma_2):
+            (\tilde{\alpha}_k)_{k\in U} = (\tilde{\beta}_k)_{k\in U}
+            \Big\}
+            \subseteq\sigma_1\times\sigma_2
+                \end{aligned}
+            \end{equation}\]</span></p>
+<p>describes equivalence of points across simplices <span class="math inline">\(\sigma_1, \sigma_2\in\mathcal{K}\)</span> with respect to the ratio of their shared components, which we call “compatibility”. According to conventions, we define the infix notation <span class="math inline">\(A\sim B \Longleftrightarrow (A, B)\in\;\sim\)</span>.</p>
+<!-- tikZ graphic -->
+<pre><code>    \begin{figure}[t]
+        \centering
+        \begin{adjustbox}{width=0.5\textwidth}
+            \input{tikz/is-compatible-with}
+        \end{adjustbox}
+    \caption{If two points are compatible according to the relation $\rel$, they have identical projections onto shared faces.
+    $\forall R\in r:T\rel R$ because the projections on the shared face $\overline{v_1v_3}$ are equal, $\psi_2(T)=\psi_4(R)=R'$.
+    What is more, we can extend this to all points in the simplex $\sigma_{-4}$ which project to $R'$ as well, $\forall\,R\in r\;\forall\,\tilde{T}\in t:R\rel\tilde{T}$.}
+    \label{fig:is-compatible-with}
+    \end{figure}
 
 
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+    While the preimage of the map $\phi$ is clearly the $(J-1)$-simplex $\Delta$, determining the exact image is not as straightforward.
+    First of all, the function $\phi$ takes a $J$-dimensional point $x$ and performs $J$ perspective projections, yielding a vector
+    $$
+        \phi(x) = 
+        \big(\psi_1(x), \ldots, \psi_J(x)\big) \defeq
+        \big(\phi(x)_1, \ldots, \phi(x)_J\big).
+    $$
+    Each element of this vector is an element of the corresponding facet,  $\psi_j(x)\defeq\phi(x)_j\in\sigma_{-j}$, making the vector of projections an element of the product space of the facets $\prod\limits_{j=1}^J\sigma_{-j}$.
+    However, due to the invariance of the barycentric coordinate ratios to perspective projection, not all combinations in the product space are possible images (cf. \autoref{theo:preimage-unlabeled}).
+    Instead, we need to restrict the image to objects where all combinations of projections $\phi(x)_n, \phi(x)_m, (n, m)\in\{1,\ldots,J\}^2$ are compatible to each other according to the $\rel$ relation (see below).
+    The image of $\Delta$ under the function $\phi$ follows as
+    \begin{equation}\label{eq:image-domain-simplex projection}
+        \mathrm{Img}_{\phi}(\Delta) = \left\{\big(\phi(x)_1,\ldots,\phi(x)_J)\in\prod\limits_{j=1}^J \sigma_{-j}\,\middle\vert\, \phi(x)_n\rel\phi(x)_m\ \forall (n,m)\in \{1,\ldots,J\}^2 \right\}
+    \end{equation}</code></pre>
+</section>
+</section>
+</section>
 
-<ol>
-<li id="fn1"><p>Like this one!<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main>
+<div id="quarto-appendix" class="default"><section id="acknowledgments" class="level2 appendix" data-number="6"><h2 class="anchored quarto-appendix-heading"><span class="header-section-number">6</span> Acknowledgments</h2><div class="quarto-appendix-contents">
+
+<p>We thank Maximilian Scholz and Javier Enrique Aguilar for stimulating discussions that played a pivotal role in transforming this method from Cthulhu triangles into a mathematically sound visualization technique. We thank Egzon Miftari for helpful advice and feedback on mathematical intricacies of the early conceptualization. MS thanks the Cyber Valley Research Fund (grant number: CyVy-RF-2021-16) and the ELLIS PhD program for support. MS and PCB were supported by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany’s Excellence Strategy – EXC-2075 - 390740016 (the Stuttgart Cluster of Excellence SimTech).</p>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -400,10 +777,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -413,8 +807,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -426,7 +829,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -470,6 +996,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -495,6 +1022,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -555,6 +1108,31 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+    <script type="text/javascript">
+    (function(d) {
+      d.querySelectorAll(".pseudocode-container").forEach(function(el) {
+        let pseudocodeOptions = {
+          indentSize: el.dataset.indentSize || "1.2em",
+          commentDelimiter: el.dataset.commentDelimiter || "//",
+          lineNumber: el.dataset.lineNumber === "true" ? true : false,
+          lineNumberPunc: el.dataset.lineNumberPunc || ":",
+          noEnd: el.dataset.noEnd === "true" ? true : false,
+          titlePrefix: el.dataset.algTitle || "Algorithm"
+        };
+        pseudocode.renderElement(el.querySelector(".pseudocode"), pseudocodeOptions);
+      });
+    })(document);
+    (function(d) {
+      d.querySelectorAll(".pseudocode-container").forEach(function(el) {
+        titleSpan = el.querySelector(".ps-root > .ps-algorithm > .ps-line > .ps-keyword")
+        titlePrefix = el.dataset.algTitle;
+        titleIndex = el.dataset.chapterLevel ? el.dataset.chapterLevel + "." + el.dataset.pseudocodeIndex : el.dataset.pseudocodeIndex;
+        titleSpan.innerHTML = titlePrefix + " " + titleIndex + " ";
+      });
+    })(document);
+    </script>
+  
+
 
 
 
