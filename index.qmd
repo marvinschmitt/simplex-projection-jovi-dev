@@ -17,7 +17,7 @@ author:
   - name: Stefan T. Radev
     email: stefan.radev93@gmail.com
     affiliations:
-      - name: Rensellaer Polytechnic Institute
+      - name: Rensselaer Polytechnic Institute
         city: Troy
         country: United States
   - name: Filip Sadlo
@@ -34,6 +34,9 @@ author:
 bibliography: bibliography.bib
 filters:
   - pseudocode
+format:
+  html:
+    page-layout: full
 ---
 
 {{< include _math.tex >}}
@@ -103,10 +106,10 @@ The visualization of high-dimensional data is a key task in countless domains of
 Yet, the representation of multi-dimensional data in a two-dimensional canvas (e.g., static screens or paper) can pose a significant challenge, leading to substantial information loss or distortions, which, in turn, can skew the interpretation and analysis of the data.
 
 In this paper, we address this challenge by developing a novel approach for visualizing 4D compositional data on a 2D canvas.
-Compositional data consists of vectors with strictly positive entries that sum to one \autocite{Greenacre2021}. This data type naturally arises for proportions, normalized data, or discrete probabilities.
-Examples for compositional data include (i) the relative composition of the gut microbiome \autocite{Gloor2017}; (ii) proportion of peoples' activities throughout the day \autocite[e.g., activity, rest, and sleep;][]{Dumuid2020}; or (iii) discrete probability vectors, such as posterior model probabilities arising in Bayesian model comparison \autocite{PhilipDawid2011,schmitt2023metauncertainty}.
+Compositional data consists of vectors with strictly positive entries that sum to one [@Greenacre2021]. This data type naturally arises for proportions, normalized data, or discrete probabilities.
+Examples for compositional data include (i) the relative composition of the gut microbiome [@Gloor2017]; (ii) proportion of peoples' activities throughout the day (e.g., activity, rest, and sleep; [@Dumuid2020]; or (iii) discrete probability vectors, such as posterior model probabilities arising in Bayesian model comparison [@PhilipDawid2011; @schmitt2023metauncertainty].
 
-Our technique, which we call \emph{simplex projection}, is a lossless visualization method that accurately represents the compositional data while preserving its geometrical and topological properties. 
+Our technique, which we call *simplex projection*, is a lossless visualization method that accurately represents the compositional data while preserving its geometrical and topological properties. 
 We prove mathematically that our mapping from 4D compositional data to its 2D representation is a bijection (invertible one-to-one correspondence) that incurs no loss of information.
 We demonstrate the effectiveness of our approach, highlighting the simplex projection as a potent tool for exploring and analyzing 4D compositional data.
 While the underlying mathematical treatment holds for arbitrary finite dimensions, throughout the paper, we will focus chiefly on illustrations and intuitions for the 4D case.
@@ -130,78 +133,73 @@ When the dimension of the simplex $\Delta^{J-1}$ is sufficiently clear from the 
 
 The representation of a point $x$ through weighted vertices, that is, via coefficients $(\pi_1,\ldots,\pi_J)$ in @eq-simplex-definition, is commonly referred to as *barycentric coordinates* with respect to the vertices $v_1, \ldots, v_J$.
 For brevity, we will slightly overload the notation and use the vector of barycentric coordinates $(\pi_1, \ldots, \pi_J)$ to refer to a point $x=\sum_{j=1}^J\pi_j\,v_j$ in the simplex with vertices $v_1,\ldots,v_J$ as defined in @eq-simplex-definition.
-Since any two simplices of equal dimension $J$ are homeomorphic by a simplicial homeomorphism \autocite{lee_introduction_2000}, the exact location of the vertices $v_1, \ldots, v_J$ is irrelevant and we will use regular (aka. equilateral) simplices for all illustrations.
+Since any two simplices of equal dimension $J$ are homeomorphic by a simplicial homeomorphism [@lee_introduction_2000], the exact location of the vertices $v_1, \ldots, v_J$ is irrelevant and we will use regular (aka. equilateral) simplices for all illustrations.
 
 The convex hull of each non-empty subset of size $N$ from the $J$ vertices $v_1,\ldots,v_J$ of a simplex $\Delta^{J-1}$ is called a $(N-1)$-face.
 In particular, the $0$-faces are the vertices, the $1$-faces are the edges, the $(J-2)$-faces are the facets which we denote as $\sigma$, and the only $(J-1)$-face is the simplex $\Delta^{J-1}$ itself. 
-We denote the facet opposing a given vertex $v_j$ as $\sigma_{-j}$.
+We denote the facet opposing a given vertex $v_j$ as $\sigma_{-j}$
 
-
-\begin{figure}[t]
-\begin{minipage}{0.47\linewidth}
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=\linewidth]{plots/ratio_invariant.png}
-        \caption{Projection of $x=(\pi_1, \pi_2, \pi_3)$ onto the facet (edge) $\sigma_{-1}=\overline{v_2v_3}$ in a triangle (2-simplex). It can be seen clearly that the perspective projection $\psi_1$ does not change the points' coordinate ratios, $\pi_2/\pi_3 = \tilde{\pi}_2 / \tilde{\pi}_3$.}
-        \label{fig:invariance_ratio}
-    \end{figure}
-\end{minipage}
-\hfill
-\begin{minipage}{0.48\linewidth}
-    \begin{figure}[H]
-        \centering
-        \begin{subfigure}[t]{0.49\linewidth}
-            \includegraphics[width=\linewidth]{plots/illustration-pure-simplicial-complex.pdf}
-            \caption{Simplicial complex.}
-        \end{subfigure}
-        \hfill
-        \begin{subfigure}[t]{0.49\linewidth}
-            \includegraphics[width=\linewidth]{plots/illustration-pure-simplicial-complex-not.pdf}
-            \caption{No simplicial complex.}
-        \end{subfigure}
-        \caption{Not all sets of simplices are simplicial complexes. In (a), three $2$-simplices form a (pure) simplicial complex. In (b), the dashed intersection of the 2-simplices is neither empty nor a face of the two simplices.}
-        \label{fig:simplicial_complex}
-    \end{figure}
-\end{minipage}
-\end{figure}
-
-\paragraph{Renormalized Barycentric Coordinates}
+#### Renormalized Barycentric Coordinates
 Let $(\pi_1, \ldots, \pi_J)$ be barycentric coordinates with $J$ components, as defined above.
 For an index subset $K\subseteq \{1,\ldots, J\}$, we define 
-\begin{equation}\label{eq:renormalized-barycentric-coordinates}
+$$
     \Big(\pit_k\Big)_{k\in K} =
     \left(\dfrac{\pi_k}{\sum\limits_{k{'}\in K}\pi_{k{'}}}\right)_{k\in K}
-\end{equation}
-as \emph{renormalized barycentric coordinates} (mind the tilde to differentiate between vanilla and renormalized coordinates).
-The term "renormalized" is motivated by the normalizing effect of the denominator in \autoref{eq:renormalized-barycentric-coordinates}.
+$${#eq-renormalized-barycentric-coordinates}
+
+as *renormalized barycentric coordinates* (mind the tilde to differentiate between vanilla and renormalized coordinates).
+The term "renormalized" is motivated by the normalizing effect of the denominator in @eq-renormalized-barycentric-coordinates.
 While a simple subset of compositional data does not generally sum to one, $\sum_{k\in K}\pi_k \leq 1$, it is easy to show that the renormalized barycentric subset sums to one, $\sum_{k \in K}\pit_k = 1$.
 Moreover, the ratio of every two renormalized coordinates $\tilde{\pi}_n, \tilde{\pi}_m$ equals the ratio of the original coordinates $\pi_n, \pi_m$ since these ratios are clearly invariant to the division by the same normalizing constant,
-\begin{equation}
+
+$$
     \frac{\pi_n}{\pi_m}=\frac{\pi_n / \sum_{k\in K}\pi_{k}}{\pi_m / \sum_{k\in K}\pi_{k}}\defeq\frac{\tilde{\pi}_n}{\tilde{\pi}_m},
-\end{equation}
+$$
 as depicted in \autoref{fig:invariance_ratio}.
 
+:::{#fig-invariance_ratio}
+![](plots/ratio_invariant.png){width=70%}
+
+Projection of $x=(\pi_1, \pi_2, \pi_3)$ onto the facet (edge) $\sigma_{-1}=\overline{v_2v_3}$ in a triangle (2-simplex). It can be seen clearly that the perspective projection $\psi_1$ does not change the points' coordinate ratios, $\pi_2/\pi_3 = \tilde{\pi}_2 / \tilde{\pi}_3$.
+:::
+
+
 #### Simplicial complex
-Following the definition of \textcite{lee_introduction_2000}, a simplicial complex $\K$ is a set of simplices in an Euclidean space that satisfies (see \autoref{fig:simplicial_complex} for an illustration):
+Following the definition of [@lee_introduction_2000], a simplicial complex $\K$ is a set of simplices in an Euclidean space that satisfies (see \autoref{fig:simplicial_complex} for an illustration):
+
+<!-- {#fig-simplicial_complex} ::: {layout="[45,45]"} didn't work somehow -->
+::: {#fig-simplicial_complex}
+::: {layout="[45,45]"}
+::: {#simplicial}
+![(a) Simplicial complex](plots/illustration-pure-simplicial-complex.png)
+:::
+:::{#non-simplicial}
+![(b) No simplicial complex.](plots/illustration-pure-simplicial-complex-not.png)
+:::
+:::
+Not all sets of simplices are simplicial complexes. In (a), three $2$-simplices form a (pure) simplicial complex. In (b), the dashed intersection of the 2-simplices is neither empty nor a face of the two simplices.
+:::
+
 \begin{enumerate}
     \item For every simplex $\sigma\in\K$, every face of $\sigma$ is in $\K$;
     \item the intersection of any two simplices $\sigma_1,\sigma_2\in\K$ is either empty or a face of both $\sigma_1$ and $\sigma_2$.
 \end{enumerate}
-A simplicial complex $\K$ is a \emph{pure simplicial complex} if all simplices $\sigma\in\K$ have equal dimension.
+A simplicial complex $\K$ is a *pure simplicial complex* if all simplices $\sigma\in\K$ have equal dimension.
 In what follows, we will project a point $x$ from the $(J-1)$-dimensional simplex $\Delta$ onto $J$ points $x_1,\ldots,x_J$, where each projected point $x_j$ ($j=1,\ldots,J$) lies in a $(J-2)$-dimensional simplex $\sigma_{-j}$, and all simplices $\sigma_{-1}, \ldots, \sigma_{-J}$ form a pure simplicial complex.
 Since the number of lower-dimensional simplices $\sigma$ and the dimensionality of the higher-dimensional point $x$ are equal in our application, we refer to both as $J$.
 Further, we will need to refer to the set $\{x_1, \ldots, x_J\}$, where each point lies in exactly one simplex $\sigma_{-j}$ of the simplicial complex $\K=\{\sigma_{-1},\ldots,\sigma_{-J}\}$, and the indices $j$ coincide (see previous section for details on the $-j$ index notation).
 We capture this with the following product notation:
-\begin{equation}
+$$
     \prod\limits_{j=1}^J \sigma_{-j} = \sigma_{-1} \times \ldots \times \sigma_{-J} = \Big\{ x_j \,\Big\vert\, x_j\in\sigma_{-j} \Big\}_{j=1}^J
-\end{equation}
+$$
 
 
 #### Perspective Projection
 
 Let $\Delta$ be a ($J-1$)-simplex and $(\pi_1, \ldots, \pi_J)$ be barycentric coordinates of a point $x\in\Delta$.
 Then, we define
-\begin{equation}\label{eq:perspective-projection}
+$$
+\begin{equation}
     \begin{aligned}
         \psi_j: \Delta&\rightarrow \sigma_{-j}\\
         x&\mapsto \psi_j(x)\\
@@ -209,52 +207,49 @@ Then, we define
         \left( \pit_1,\ldots, \pit_{j-1}, \pit_{j+1}, \ldots, \pit_J \right)
     \end{aligned}
 \end{equation}
-as the \emph{perspective projection} of $x$ about the vertex $v_j$ onto the opposing facet $\sigma_{-j}$.
+$$ {#eq-perspective-projection}
+
+as the *perspective projection* of $x$ about the vertex $v_j$ onto the opposing facet $\sigma_{-j}$.
 This corresponds to shooting a ray from the vertex $v_j$ through the point $x$, and the intersection of that ray with the opposing edge is the image $\psi_j(x)$.
 \autoref{fig:invariance_ratio} provides an illustration for a triangle (2-simplex) $\Delta$ with edges $v_1, v_2, v_3$, where the perspective projection $\psi_1$ projects the point $x$ about the vertex $v_1$ onto the opposing edge $\sigma_{-1}=\overline{v_2v_3}$ ($\overline{AB}$ denotes a line segment from $A$ to $B$).
-It is evident that perspective projection about a vertex $v_j$ is the geometrical equivalent to renormalization (\autoref{eq:renormalized-barycentric-coordinates}) after removing the $j^{\text{th}}$ component.
+It is evident that perspective projection about a vertex $v_j$ is the geometrical equivalent to renormalization @eq-renormalized-barycentric-coordinates after removing the $j^{\text{th}}$ component.
 For the theorems below, it is crucial that perspective projection does not affect the ratios of the remaining components' barycentric coordinates.
 
 
 ## Related Work
-		
 
-\begin{figure}[t]
-    \centering
-        \begin{subfigure}[t]{0.38\linewidth}
-            \includegraphics[width=\linewidth]{plots/pmp_visualization_parallel_plot.pdf}
-            \caption{Parallel coordinates.}
-             \label{fig:pmp-visualization-strategies:parallel-coordinates}
-        \end{subfigure}
-        \begin{subfigure}[t]{0.38\linewidth}
-            \includegraphics[width=\linewidth]{plots/pmp_visualization_stacked_plot.pdf}
-            \caption{Stacked plot.}
-            \label{fig:pmp-visualization-strategies:stacked-plot}
-        \end{subfigure}
-    \begin{subfigure}[t]{0.23\linewidth}
-        \includegraphics[width=\linewidth]{plots/pmp_visualization_simplex_plot.pdf}
-        \caption{Simplex plot.}
-        \label{fig:pmp-visualization-strategies:simplex-plot}
-    \end{subfigure}
-    \caption{Existing visualization techniques for compositional data. The data are equal for all three visualization methods and they stem from a Bayesian model comparison experiment: For $i=1,\ldots,100$, we have posterior model probabilities $p(M_1\given y^{(i)}), p(M_2\given y^{(i)}), p(M_3\given y^{(i)})$ which are, per construction, non-negative and sum to one for each $i$. (a) Parallel coordinates convey the dispersion for each compartment $M_j$. Here, $M_3$ has less variance across simulation indices $i$. (b) Stacked plots illustrate the dependency on a third variable. Here, there is no systematic dependency on the simulation index $i$. (c) Simplex plots visualize the relation between compartments. Here, we observe a banana-shaped relation where some combinations of compartments are more likely than others.}
-    \label{fig:pmp-visualization-strategies}
-\end{figure}
+:::{#fig-pmp-visualization-strategies}
+:::{layout="[39,39,22]"}
+:::{}
+![Parallel coordinates.](plots/pmp_visualization_parallel_plot.png){#fig-pmp-visualization-strategies:parallel-coordinates}
+:::
 
+:::{}
+![Stacked plot.](plots/pmp_visualization_stacked_plot.png){#fig-pmp-visualization-strategies:stacked-plot}
+:::
+
+:::{}
+![Simplex plot.](plots/pmp_visualization_simplex_plot.png){#fig-pmp-visualization-strategies:simplex-plot width=87.5%}
+:::
+
+:::
+Existing visualization techniques for compositional data. The data are equal for all three visualization methods and they stem from a Bayesian model comparison experiment: For $i=1,\ldots,100$, we have posterior model probabilities $p(M_1\given y^{(i)}), p(M_2\given y^{(i)}), p(M_3\given y^{(i)})$ which are, per construction, non-negative and sum to one for each $i$. (a) Parallel coordinates convey the dispersion for each compartment $M_j$. Here, $M_3$ has less variance across simulation indices $i$. (b) Stacked plots illustrate the dependency on a third variable. Here, there is no systematic dependency on the simulation index $i$. (c) Simplex plots visualize the relation between compartments. Here, we observe a banana-shaped relation where some combinations of compartments are more likely than others.
+:::
 
 In the following, we will briefly compare three fundamental visualization techniques to plot compositional data: parallel coordinate plots, stacked plots, and simplex (aka ternary) plots. An illustration of each method for a fixed data set is displayed in \autoref{fig:pmp-visualization-strategies}.
 
-*Parallel coordinate plots* \autocite{klinger_parallel_1991, inselberg_parallel_2009} depict the dimension as a variable on the $x$-axis (see \autoref{fig:pmp-visualization-strategies:parallel-coordinates}).
+*Parallel coordinate plots* [@klinger_parallel_1991; @inselberg_parallel_2009] depict the dimension as a variable on the $x$-axis (see \autoref{fig:pmp-visualization-strategies:parallel-coordinates}).
 This means that, in principle, there is no upper bound on the number of data dimensions. However, correlations and clusters are not immediately visible, which is a major conceptual drawback of parallel plots.
 
-*Stacked plots* \autocite{byron_stacked_2008} are vertically stacked area plots with a continuous $x$-axis (see \autoref{fig:pmp-visualization-strategies:stacked-plot}).
+*Stacked plots* [@byron_stacked_2008] are vertically stacked area plots with a continuous $x$-axis (see \autoref{fig:pmp-visualization-strategies:stacked-plot}).
 The dimension is encoded in the fill color or pattern of the respective area.
 Stacked plots can communicate a relatively large number of dimensions, with an upper bound given by the number of discrete levels for the area fill (e.g., color or fill pattern).
 Global trends, such as high values on one dimension throughout many data sets, are easily visible.
 Furthermore, an additional (continuous) variable of interest can be plotted on the $x$-axis.
 As a drawback, correlations between data instances as well as clusters are not immediately visible.
-Moreover, the usability of stacked plots is influenced by crucial design choices, such as ordering \autocite{basu_aesthetics_2021}, layout \autocite{he_optimal_2022}, or type \autocite[classical, inverting, and diverging;][]{indratmo_efficacy_2018}.
+Moreover, the usability of stacked plots is influenced by crucial design choices, such as ordering [@basu_aesthetics_2021], layout [@he_optimal_2022], or type [classical, inverting, and diverging @indratmo_efficacy_2018].
 
-*Simplex plots* \autocite[aka. ternary plots;][]{howarth_sources_1996} leverage the fact that compositional data $(\pi_1, \ldots, \pi_J)$ fulfil the properties of barycentric coordinates (they sum to 1 and are non-negative) according to \autoref{eq:simplex-definition}.
+*Simplex plots* [aka. ternary plots, @howarth_sources_1996] leverage the fact that compositional data $(\pi_1, \ldots, \pi_J)$ fulfil the properties of barycentric coordinates (they sum to 1 and are non-negative) according to @eq-simplex-definition.
 Consequently, the simplex plot visualizes the data as a point in an equilateral triangle ($2$-simplex) by interpreting the data as barycentric coordinates (see \autoref{fig:pmp-visualization-strategies:simplex-plot}).
 The main advantage of simplex plots is that correlations are immediately visible.
 The crucial drawback of a simplex plot is the data dimension in the visualization:
@@ -263,23 +258,7 @@ In a printed $2$D medium, this implies an upper bound of $3$ dimensions for comp
 
 Within the scope of this paper, we will extend simplex plots in order to preserve their advantages (i.e., conveying correlations between components) while pushing the envelope on their main drawback, namely the limited number of dimensions.
 
-\begin{figure*}[t]
-    \centering
-    \begin{subfigure}[t]{0.78\linewidth}
-       \includegraphics[width=0.9\linewidth]{plots/projection_single_horizontal.png}
-       \caption{Projection of a single point $x$ onto each facet.}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.2\linewidth}
-\includegraphics[width=\linewidth]{plots/unfolded_single.png}
-       \caption{Unfolded projections.}
-    \end{subfigure}
-    \caption{Illustration of the simplex projection $\phi=(\psi_1, \psi_2, \psi_3, \psi_4)$ for a single point $x$ in the tetrahedron $\Delta^3$.}
-    \label{fig:preimage-matching-points-illustration}
-\end{figure*}
-
 ## Simplex Projection
-
 
 
 We leverage the structure of compositional data to propose a visualization method with less image dimensions than data dimensions.
@@ -289,7 +268,7 @@ After proving that the method acts as a bijective mapping between the full-order
 	
 ### Single Point {#sec-methods-simplex-projection-labeled-points}
 Consider a point $x\in\Delta$ in the $(J-1)$ simplex.
-In the following, we will prove that a \emph{specific} set of perspective projections $\big(\psi_1,\ldots,\psi_J\big)$ constitutes an invertible mapping function $\phi$.
+In the following, we will prove that a *specific* set of perspective projections $\big(\psi_1,\ldots,\psi_J\big)$ constitutes an invertible mapping function $\phi$.
 That is, we can reconstruct the original point $x$ from its image $\phi(x)$ under the mapping function $\phi$.
 The exact form of $\phi$ is illustrated in \autoref{fig:preimage-matching-points-illustration} and formalized below.
 
@@ -299,15 +278,17 @@ The exact form of $\phi$ is illustrated in \autoref{fig:preimage-matching-points
 
 Let $\Delta$ be a $(J-1)$-simplex, $\K=\left\{\sigma_{-j}\right\}_{j=1}^J$ be a pure simplicial complex of the facets of $\Delta$, and $\psi_j(x)$ the perspective projection of $x$ onto $\sigma_{-j}$ about the vertex $v_j$. Further, let $\mathrm{Img}_{\phi}$ be the image of $\phi$, as detailed in the Appendix.
 Then,
-\begin{equation}\label{eq:bijection-Delta-K}
-    \begin{aligned}
+
+$$
+\begin{aligned}
     \phi: \Delta &\rightarrow \mathrm{Img}_{\phi}(\Delta)\\
                 x & \mapsto 
         \left(
             \psi_j\left(x\right)\in\sigma_{-j}
         \right)_{j=1}^J
 \end{aligned}
-\end{equation}
+$$ {#eq-bijection-Delta-K}
+
 is a bijective mapping from the $(J-1)$-simplex $\Delta$ to the set of compatible projections in the product set of the $(J-2)$-facets of $\Delta$.
 What is more, only two matching projections $T\in\sigma_{-1}, R\in\sigma_{-2}$ onto different simplices $\sigma_{-1}, \sigma_{-2}\in\K$ suffice to uniquely define the original point $x\in\Delta$.
 :::
@@ -326,22 +307,22 @@ $$
     \psi_j(x) = (\pit_1, \ldots, \pit_{j-1}, \pit_{j+1}, \ldots, \pit_J)
 $$
 
-by definition in \autoref{eq:bijection-Delta-K} and \autoref{eq:perspective-projection}.
+by definition in @eq-bijection-Delta-K and @eq-perspective-projection.
 By repeatedly removing another component and re-normalizing the coordinates, we can extract numerical values 
 $$
 	\frac{\pi_n}{\pi_m}=r_{n,m}
 $$ 
-for the ratios of all pairs of barycentric coordinates of the original point $x$ because the barycentric coordinate \emph{ratios} are invariant to projection.
+for the ratios of all pairs of barycentric coordinates of the original point $x$ because the barycentric coordinate *ratios* are invariant to projection.
 In the following, we will only consider the ratios of subsequent components, i.e., $\{\frac{\pi_1}{\pi_2},\frac{\pi_2}{\pi_3},\ldots,\frac{\pi_{J-1}}{\pi_J}\}$.
 The other ratios are not required to solve the problem at hand.
 Recall that the constraint $\sum_{j=1}^J\pi_j=1$ still holds for the barycentric coordinates of $x$.
 This yields a system of $J$ equations
 
-\begin{equation}
-    \myarray{
+$$
+\myarray{
     \pi_1 / \pi_2  = r_{1,2}\\
-    \pi_2 / \pi_3  = r_{2,3}\\
-    \hspace*{1cm}\vdots \\
+    \pi_2 / \pi_3 = r_{2,3}\\
+    \hspace{1cm}\vdots \\
     \pi_{J-1} / \pi_{J}  = r_{J-1,J}\\
     \pi_1 + \ldots + \pi_J  = 1
     }
@@ -349,7 +330,7 @@ This yields a system of $J$ equations
     \myarray{
     \pi_1 = r_{1,2}\pi_2\\
       \pi_2 = r_{2,3}\pi_3\\
-      \hspace*{1cm}\vdots\\
+      \hspace{1cm}\vdots\\
       \pi_{J-1} = r_{J-1,J}\pi_J\\
       \pi_1+\ldots+\pi_J = 1
     }
@@ -357,16 +338,16 @@ This yields a system of $J$ equations
     \myarray{
     \pi_1 - r_{1,2}\pi_2 = 0\\
     \pi_2 - r_{2,3}\pi_3 = 0\\
-    \hspace*{1cm}\vdots\\
+    \hspace{1cm}\vdots\\
     \pi_{J-1} - r_{J-1,J}\pi_J = 0\\
     \pi_1+\ldots+\pi_J = 1
     }
-\end{equation}
+$$
 
 with $J$ unknowns and the matrix representation
 
-\begin{equation}
-    \begin{aligned}
+$$
+\begin{aligned}
     \underbrace{
       \begin{pmatrix}
       1 & -r_{1,2} & 0 & \cdots & 0 & 0\\
@@ -391,8 +372,8 @@ with $J$ unknowns and the matrix representation
       0 \\
       1
       \end{pmatrix}
-    \end{aligned}
-\end{equation}
+\end{aligned}
+$$
     
 which can be solved since $\mathbf{A}\in\mathbb{R}^{J\times J}$ clearly has full rank $J$.
 The solution $(\pi_1,\ldots,\pi_J)^{\top}=\mathbf{A}^{-1}(0, \ldots, 0, 1)^{\top}$, in turn uniquely defines $x$ through its barycentric coordinate representation
@@ -420,17 +401,24 @@ This means that the projections onto only two facets must always suffice to reco
 ### Set of Points
 
 We previously treated the simplex projection $\phi$ of a single point $x\in\Delta$ and proved that $\phi$ is a bijection.
-The next step generalizes the simplex projection to a \emph{set} of $L$ points $\{x^{(1)}, \ldots, x^{(L)}\}\equiv\{x^{(l)}\}_{l=1}^L$ with shorthand notation $\{x^{(l)}\}$ when the context is clear.
+The next step generalizes the simplex projection to a *set* of $L$ points $\{x^{(1)}, \ldots, x^{(L)}\}\equiv\{x^{(l)}\}_{l=1}^L$ with shorthand notation $\{x^{(l)}\}$ when the context is clear.
 One might be tempted to assume that we can simply apply $\phi$ to each point in the set individually and preserve the bijection, and this is technically true---under one critical assumption, which does not hold in practical applications: We do not know which projections match to the same original point $x$ in the preimage, as explained more technically in the following.
 
-For each single point $x^{(l)}$, we can calculate $\phi(x^{(l)})$ according to \autoref{eq:bijection-Delta-K}, and we can readily apply \autoref{theo:preimage-matching-points} to recover $x^{(l)} = \phi^{-1}\big(\phi(x^{(l)})\big)$.
+For each single point $x^{(l)}$, we can calculate $\phi(x^{(l)})$ according to @eq-bijection-Delta-K, and we can readily apply @thm-matching-points to recover $x^{(l)} = \phi^{-1}\big(\phi(x^{(l)})\big)$.
 \autoref{fig:preimage-matching-points-illustration} illustrates this for the tetrahedron ($J=4$).
 Now consider two points $x^{(n)}, x^{(m)}$ from the preimage, and their projections $\phi(x^{(n)}), \phi(x^{(m)})$.
-In order to recover the original points with \autoref{theo:preimage-matching-points}, we need the barycentric coordinate ratios of each image, which is where the critical assumption becomes salient.
-On each facet $\sigma_{-j}$, we now have \emph{two} projections, namely $\psi_j(x^{(n)})$ and $\psi_j(x^{(m)})$.
+In order to recover the original points with @thm-matching-points, we need the barycentric coordinate ratios of each image, which is where the critical assumption becomes salient.
+On each facet $\sigma_{-j}$, we now have *two* projections, namely $\psi_j(x^{(n)})$ and $\psi_j(x^{(m)})$.
 However, the two projections are indistinguishable\footnote{Theoretically, it is possible to color all projections arising from $x^{(n)}$ in one color, all projections arising from $x^{(m)}$ in another color, and so forth, but this quickly becomes infeasible for a larger set of projected points.}, and it is not clear which one arose from $x^{(n)}$ and which one arose from $x^{(m)}$.
-Yet, the argumentation in \autoref{theo:preimage-matching-points} builds on using coordinate ratios of an original point from its different projections.
-Therefore, the previous proof cannot be readily applied to a set of images when the \emph{labels} (i.e., which projections arose from which original point) are unknown.
+Yet, the argumentation in @thm-matching-points builds on using coordinate ratios of an original point from its different projections.
+Therefore, the previous proof cannot be readily applied to a set of images when the *labels* (i.e., which projections arose from which original point) are unknown.
+
+
+:::{.callout-warning}
+
+## TO DO: Replace with figure of the projection with interactive figures.
+
+:::
 
 \begin{figure*}[t]
     \centering
@@ -448,8 +436,9 @@ The labels of the projections onto the facets in \textbf{(c)} are lost: We do no
     \label{fig:preimage-set-points-illustration}
 \end{figure*} 
 
-As an extension to \autoref{theo:preimage-matching-points}, we define a function $\Phi$ which applies the simplex projection $\phi$ to each element of a \emph{set} of $L$ points $\{x^{(l)}\}$,
-\begin{equation}
+As an extension to @thm-matching-points, we define a function $\Phi$ which applies the simplex projection $\phi$ to each element of a *set* of $L$ points $\{x^{(l)}\}$,
+
+$$
     \Phi
         \left(
             \left\{
@@ -460,11 +449,13 @@ As an extension to \autoref{theo:preimage-matching-points}, we define a function
                 \phi(x^{(l)})
         \right\}
 ,
-\end{equation}
+$$
+
   where we use the shorthand set notation $\{\cdot\}$ for brevity.
 If the point labels $l=1,\ldots, L$ are known for all images (up to permutation), the function $\Phi$ will be invertible as well because $\phi^{-1}$ is invertible:
-\begin{equation}\label{eq:proof-sets-equality-theo1}
-    \begin{aligned}
+
+$$
+\begin{aligned}
         \Phi^{-1}
         \left(
             \left\{
@@ -482,19 +473,20 @@ If the point labels $l=1,\ldots, L$ are known for all images (up to permutation)
             x^{(l)}
         \right\}
         .
-    \end{aligned}
-\end{equation}
+\end{aligned}
+$${#eq-proof-sets-equality-theo1}
 
-Consequently, it remains to be proven that the labels across projections onto different facets are unique (up to permutations of labels) such that the problem can be reduced to \autoref{theo:preimage-matching-points}.
+Consequently, it remains to be proven that the labels across projections onto different facets are unique (up to permutations of labels) such that the problem can be reduced to @thm-matching-points.
 Since performing a perspective projection on a point $\Delta^0 (J=1)$ is not sensible and a perspective projection of points on a line $\Delta^1 (J=2)$ would project all points to a single renormalized coordinate $\pit_j=1$, we formulate the following theorem for $J\geq 3$.
 		
 :::{#thm-unlabeled-points}
 ## Bijective simplex projection for sets of points
 
-Let $\Delta$ be a $(J-1)$-simplex ($J\geq 3$), $\K=\left\{\sigma_{-j}\right\}_{j=1}^J$ be a pure simplicial complex of the facets of $\Delta$, $\phi$ a bijective mapping (\autoref{eq:bijection-Delta-K}) with inverse function $\phi^{-1}$ and $\psi_j(x)$ the perspective projection of $x$ onto $\sigma_{-j}$ about the vertex $v_j$. Further, let $\mathrm{Img}_{\phi}$ denote the image of $\phi$, as described in the Appendix.
+Let $\Delta$ be a $(J-1)$-simplex ($J\geq 3$), $\K=\left\{\sigma_{-j}\right\}_{j=1}^J$ be a pure simplicial complex of the facets of $\Delta$, $\phi$ a bijective mapping (@eq-bijection-Delta-K) with inverse function $\phi^{-1}$ and $\psi_j(x)$ the perspective projection of $x$ onto $\sigma_{-j}$ about the vertex $v_j$. Further, let $\mathrm{Img}_{\phi}$ denote the image of $\phi$, as described in the Appendix.
 Then,
-\begin{equation}\label{eq:bijection-Delta-K-set}
-    \begin{aligned}
+
+$$
+\begin{aligned}
     \Phi: \left\{\Delta^{(l)}\right\}_{l=1}^L &\rightarrow \left\{
     \mathrm{Img}_{\phi}(\Delta^{(l)})
     \right\}_{l=1}^L\\
@@ -505,7 +497,8 @@ Then,
             \right)
         \right\}_{l=1}^L
 \end{aligned}
-\end{equation}
+$${#eq-bijection-Delta-K-set}
+
 is a bijective mapping.
 :::
 
@@ -515,11 +508,11 @@ is a bijective mapping.
 
 #### Rouché-Capelli Theorem
 
-One critical argument in the proof builds on a corollary of the Rouch\'{e}-Capelli theorem \autocite{safarevic_linear_2013}, which we will denote in the following:
+One critical argument in the proof builds on a corollary of the Rouché-Capelli theorem [@safarevic_linear_2013], which we will denote in the following:
 "In an euclidean space $\mathbb{R}^{J-1}$, $J$ hyperplanes $Z_1, \ldots, Z_J$ can have zero, one, or infinitely many concurrencies."
 
-The $J$ hyperplanes are defined by $Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1} = c_j$, and the concurrency (intersection of \emph{all} hyperplanes simultaneously) is the solution to the following system of equations:
-\begin{equation}
+The $J$ hyperplanes are defined by $Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1} = c_j$, and the concurrency (intersection of *all* hyperplanes simultaneously) is the solution to the following system of equations:
+$$
 \underbrace{
     \begin{pmatrix}
         a_{1,1} & \cdots & a_{1, J-1} \\
@@ -543,9 +536,9 @@ The $J$ hyperplanes are defined by $Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1}
     }_{b
     \in\mathbb{R}^{J}
     }
-\end{equation}
+$$
         
-The Rouch\'{e}-Capelli theorem \autocite{safarevic_linear_2013} states that this system has
+The Rouché-Capelli theorem [@safarevic_linear_2013] states that this system has
 
 i. no solution, if and only if the rank of its coefficient matrix $\mathbf{A}$ equals the rank of the augmented matrix $[\mathbf{A}|b]$;
 ii. exactly one solution if and only if $\mathrm{Rank}(\mathbf{A})=J-1$; and
@@ -554,23 +547,20 @@ iii. infinitely many solutions otherwise.
 
 #### Proof of the Theorem
 :::{.proof}
-The proof will show that $\Phi$ is a bijective mapping by showing that there is exactly one solution to label the projections onto the facets (up to permutations), and reduce the problem to \autoref{theo:preimage-matching-points}.
-        
-\begin{figure}[t]
-    \centering
-    \begin{subfigure}[t]{0.48\linewidth}
-    \includegraphics[width=1.0\linewidth]{plots/set-points-hyperplanes.pdf}
-    \caption{In $\Delta^2$, the hyperplanes which are implied by the ratios on the edges are lines.}
-    \label{fig:set-of-points-hyperplane}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{0.48\linewidth}
-    \includegraphics[width=1.0\linewidth]{plots/set-points-equivalence.pdf}
-    \caption{Finding concurrencies of hyperplanes (lines in this case) is equivalent to identifying consistent points in the preimage. Note that hyperplanes originating from the same edge may be equal (bottom-most purple line), but not parallel and unequal.}
-    \label{fig:set-of-points-equivalence}
-    \end{subfigure}
-    \caption{Illustrations for \autoref{theo:preimage-unlabeled}.}
-\end{figure}
+The proof will show that $\Phi$ is a bijective mapping by showing that there is exactly one solution to label the projections onto the facets (up to permutations), and reduce the problem to @thm-matching-points.
+
+:::{#fig-therem1}
+:::{layout="[48, 48]"}
+:::{}
+![In $\Delta^2$, the hyperplanes which are implied by the ratios on the edges are lines.](plots/set-points-hyperplanes.png){#fig-set-of-points-hyperplane}
+:::
+:::{}
+![Finding concurrencies of hyperplanes (lines in this case) is equivalent to identifying consistent points in the preimage. Note that hyperplanes originating from the same edge may be equal (bottom-most purple line), but not parallel and unequal.](plots/set-points-equivalence.png){#fig-set-of-points-equivalence}
+:::
+:::
+Illustrations for @thm-unlabeled-points.
+:::
+
         
 As in @thm-matching-points, we can repeatedly remove components from all projections and re-normalize the coordinates to extract numerical values $\frac{\pi_n}{\pi_m}=r_{n,m}$ for the ratios of all pairs of barycentric coordinates of all projections.
 Each ratio $r_{n, m}^{(l)}=\frac{\pi_n^{(l)}}{\pi_m^{(l)}}$ implies a hyperplane $H\in\mathbb{R}^{J-2}$ through the points $(\pit_n^{(l)}, \pit_m^{(l)})$ and the set of points $\{v_{a}\}_{a\notin\{n, m\}}$ of all vertices of the $(J-1)$-simplex which have been marginalized out to obtain the ratio $r_{n, m}^{(l)}$ (see \autoref{fig:set-of-points-hyperplane}). All points $h\in H\cap\Delta$ in the union of $H$ and the simplex are compatible with the point $(\pit_n^{(l)}, \pit_m^{(l)})$ on the edge $\overline{v_nv_m}$: $$\forall h\in H\cap \Delta: h\rel(\pit_n^{(l)}, \pit_m^{(l)}).$$
@@ -608,15 +598,15 @@ Every preimage point $x^{(l)}$ has a consistent ratio representation, and thus t
 We prove this by contradiction.
 Assume there was an additional $L+1^{\text{st}}$ concurrency $z\notin\{x^{(l)}\}$.
 This means that $J$ hyperplanes---one originating from each edge---intersect at the point $z\in\Delta$.
-Call these hyperplanes $Z_1, \ldots, Z_J$ with $Z_j \in \{ H_{j,j+1}^{(l)} \}$ for $j \neq J$ and $Z_J \in \{ H_{J,1}^{(l)} \}$ for $j = J$ as in \autoref{eq:sets-of-points-hyperplane-definition}.
-Each of the $L$ concurrencies $\{x^{(l)}\}$, which must exist as argued in \textbf{(I)}, has a set of $J$ corresponding hyperplanes which intersect at $x^{(l)}$ by definition.
+Call these hyperplanes $Z_1, \ldots, Z_J$ with $Z_j \in \{ H_{j,j+1}^{(l)} \}$ for $j \neq J$ and $Z_J \in \{ H_{J,1}^{(l)} \}$ for $j = J$ as in @eq-sets-of-points-hyperplane-definition.
+Each of the $L$ concurrencies $\{x^{(l)}\}$, which must exist as argued in **(I)**, has a set of $J$ corresponding hyperplanes which intersect at $x^{(l)}$ by definition.
 Because one hyperplane of each set is induced by each original point, the mapping from an original point (one of the $L$ concurrencies) to $J$ hyperplanes (one of each set of $L$ concurrencies $\{x^{(l)}\}$ as above) is surjective (exhaustive) on the set of all $J\cdot L$ hyperplanes.
 Consequently, each of the hyperplanes $Z_1, \ldots, Z_J$, which intersect at the "additional" concurrency $z$, has a corresponding "established" concurrency with $J-1$ other hyperplanes from the set of $L$ concurrencies from above. For example, if $Z_1 = H_{1,2}^{(l')}$, then $x^{(l')} \in \{ x^{(l)} \}$ is an established concurrency corresponding to $Z_1$.
-The phrase "established" emphasizes that we already know about these $L$ concurrencies through \textbf{(1)}.
+The phrase "established" emphasizes that we already know about these $L$ concurrencies through **(1)**.
 Now consider these $J$ established concurrencies which correspond to $Z_1, \ldots ,Z_J$, which we call $\hat{x}^{(1)}, \ldots, \hat{x}^{(J)}$, all in $\{x^{(l)}\}$.
 One of the following cases must occur:
 
-(a) **At least one pair of established concurrencies is equal**, $\exists n,m\in\{1,\ldots,J\}^2, n\neq m: \hat{x}^{(n)} = \hat{x}^{(m)}$. This means that the hyperplanes $Z_n$ and $Z_m)$ intersect at $\hat{x}^{(n)}=\hat{x}^{(m)}$, and by definition of $z$ they also intersect at $z$. The corollary on the Rouch\'{e}-Capelli theorem implies that either $z=\hat{x}^{(n)}=\hat{x}^{(m)}\in\{x^{(l)}\}$ (contradiction; $z$ is assumed to be a concurrency beyond $\{x^{(l)}\}$) or the two hyperplanes $Z_n$ and $Z_m$ are equal (contradiction).
+(a) **At least one pair of established concurrencies is equal**, $\exists n,m\in\{1,\ldots,J\}^2, n\neq m: \hat{x}^{(n)} = \hat{x}^{(m)}$. This means that the hyperplanes $Z_n$ and $Z_m)$ intersect at $\hat{x}^{(n)}=\hat{x}^{(m)}$, and by definition of $z$ they also intersect at $z$. The corollary on the Rouché-Capelli theorem implies that either $z=\hat{x}^{(n)}=\hat{x}^{(m)}\in\{x^{(l)}\}$ (contradiction; $z$ is assumed to be a concurrency beyond $\{x^{(l)}\}$) or the two hyperplanes $Z_n$ and $Z_m$ are equal (contradiction).
 
 (b) **All established concurrencies are different from each other**, $\hat{x}^{(n)}\neq \hat{x}^{(m)}\;\forall n, m\in\{1,\ldots,J\}^2,n\neq m$. The fact that $z=(\zeta_1,\ldots,\zeta_J)$ shares a hyperplane with each of the $J$ established concurrencies $\hat{x}^{(1)}, \ldots, \hat{x}^{(J)}$---each with barycentric coordinate representation $(\hat{\pi}_1^{(j)}, \ldots, \hat{\pi}_J^{(j)})$---translates to the ratio equalities in barycentric coordinates
 $$
@@ -625,7 +615,7 @@ $$
 \ldots,\quad
 \frac{\zeta_J}{\zeta_1} = \frac{\hat{\pi}^{(J)}_J}{\hat{\pi}^{(J)}_1}.
 $$
-Generalized Ceva's theorem \autocite{buba-brzozowa_cevas_2000} guarantees that 
+Generalized Ceva's theorem [@buba-brzozowa_cevas_2000] guarantees that 
 $$ 
 \frac{\zeta_1}{\zeta_2}\,\frac{\zeta_2}{\zeta_3}\cdots\frac{\zeta_J}{\zeta_1}=1
 $$
@@ -637,7 +627,7 @@ $$
 \cdots
 \frac{\hat{\pi}^{(J)}_J}{\hat{\pi}^{(J)}_1}=1.
 $$
-It follows from the corollary of the Rouch\'{e}-Capelli theorem that either $\hat{x}=z$ (contradiction) or that at least two of the hyperplanes are equal (contradiction).
+It follows from the corollary of the Rouché-Capelli theorem that either $\hat{x}=z$ (contradiction) or that at least two of the hyperplanes are equal (contradiction).
 
 This concludes the proof. <div style="text-align: right"> $\square$ </div>
 
@@ -645,11 +635,12 @@ This concludes the proof. <div style="text-align: right"> $\square$ </div>
 
 :::
 
-:::{.callout-warning}
+<!-- :::{.callout-warning} -->
 
-## TO DO: Format the pseudocode algorithm, see [https://github.com/leovan/quarto-pseudocode](https://github.com/leovan/quarto-pseudocode)
+<!-- ## TO DO: Format the pseudocode algorithm, see [https://github.com/leovan/quarto-pseudocode](https://github.com/leovan/quarto-pseudocode) -->
 
-:::
+<!-- ::: -->
+
 ```pseudocode
 #| label: alg-simplex-marginal-density-numeric
 #| html-indent-size: "1.2em"
@@ -657,44 +648,41 @@ This concludes the proof. <div style="text-align: right"> $\square$ </div>
 #| html-line-number: true
 #| html-line-number-punc: ":"
 #| html-no-end: false
+#| pdf-placement: "htb!"
+#| pdf-line-number: true
 
 \begin{algorithm}
 \caption{Marginal density approximation}
 \begin{algorithmic}
-    \REQUIRE{Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$}
-    \ENSURE{Approximate marginal density $\hat{p}(z)$}
-    \FOR{$\sigma_{-j}\in\K$}
-        \FOR{$z\in\subdivision(\sigma_{-j})$}
-            \STATE{$s = \overline{z v_j}$}
-            \STATE{$\hat{p}(z)=0$}
-            \FOR{$m=1,\ldots, M$}
-                \STATE{$x_m\leftarrow z + \frac{s}{M}$}\hfill\COMMENT{equidistant points on $s$}
-                \STATE{$\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$}
-            \ENDFOR
-        \ENDFOR
-    \ENDFOR
-    \RETURN $\hat{p}(z)$
+\State \textbf{Input:} Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$
+\State \textbf{Output:} Approximate marginal density $\hat{p}(z)$
+ \For{$\sigma_{-j} \in \mathcal{K}$}
+        \For{$z \in \mathcal{S}(\sigma_{-j})$}
+            \State $s = \overline{z v_j}$
+            \State $\hat{p}(z)=0$
+            \For{$m=1,\ldots, M$}
+                \State $x_m\leftarrow z + \frac{s}{M}$
+                \State $\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$
+            \EndFor
+        \EndFor
+    \EndFor
+\Return $\hat{p}(z)$
 \end{algorithmic}
 \end{algorithm}
 ```
 
+:::{#fig-validation-numeric-approximation}
+![](plots/validation_marginal_dirichlet_full_figure.png)
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.9\linewidth]{plots/validation_marginal_dirichlet_full_figure.pdf}
-    \vspace*{-0.30cm}
-    \caption{Validation of the marginal density approximation: For the joint Dirichlet density over $\Delta^2$ (triangle interior), the $2$-variate marginal distributions are approximated (dashed green) and plotted against the analytic ground-truth density (solid purple) orthogonal to the respective edge.
-    Our approximation is indistinguishable from the analytic ground-truth density.}
-    \label{fig:validation-numeric-approximation}
-\end{figure}    
-
+Validation of the marginal density approximation: For the joint Dirichlet density over $\Delta^2$ (triangle interior), the $2$-variate marginal distributions are approximated (dashed green) and plotted against the analytic ground-truth density (solid purple) orthogonal to the respective edge. Our approximation is indistinguishable from the analytic ground-truth density.
+:::
 
 
 ### Continuous Probability Densities
 In what follows, we will extend our method from discrete sets of points to continuous densities, such as probability density functions over the simplex $\Delta$.
-Given a density $p(x)$ defined over the simplex $\Delta$, we can approximate the (multivariate) marginal densities of the projections in the simplices of the simplicial complex $\K$ numerically (see Algorithm \ref{alg:simplex-marginal-density-numeric}).
-This approach is conceptually similar to pre-integration \autocite{griewank_high_2018} for each component, but offers a strong statistical foundation through the principled statistically equivalent operation of \emph{marginalization}.
-Furthermore, the simplex projection method is information-preserving in finite dimensions (as opposed to pre-integration in general), as shown in \autoref{theo:preimage-matching-points} and \autoref{theo:preimage-unlabeled}.
+Given a density $p(x)$ defined over the simplex $\Delta$, we can approximate the (multivariate) marginal densities of the projections in the simplices of the simplicial complex $\K$ numerically (see @alg-simplex-marginal-density-numeric).
+This approach is conceptually similar to pre-integration [@griewank_high_2018] for each component, but offers a strong statistical foundation through the principled statistically equivalent operation of *marginalization*.
+Furthermore, the simplex projection method is information-preserving in finite dimensions (as opposed to pre-integration in general), as shown in @thm-matching-points and @thm-unlabeled-points.
 
 Let $\Delta$ be a $(J-1)$-simplex, $p(x)$ be a probability density function over $\Delta$, and $\K=\left\{\sigma_{-j}\right\}_{j=1}^J$ be a pure simplicial complex of the facets of $\Delta$.
 For each simplex $\sigma_{-j}\in\K$, we define a node-based subdivision $\subdivision(\sigma_{-j})$ of depth $D$.
@@ -703,14 +691,16 @@ The depth $D$ controls the number of nodes and thus the resolution of the approx
 For each node $z$ of the subdivision $\subdivision(\sigma_{-j})$, we construct a line segment to the opposing vertex $s=\overline{z v_j}$ in the space of the original higher-order simplex $\Delta$.
 Then, we choose $M$ equidistant points $(x_m)_{m=1}^M, x_m\in\mathbb{R}^{J-1}$ on the line segment $s$ and evaluate the density $p(x_m)$ for each point $x_m$.
 The line integral of $p(x)$ along $s$ is then approximated by
-\begin{equation}\label{eq:line-integral-approximation}
+
+$$
     \int_{s} p(x)\diff x = \lim_{M\rightarrow \infty}
     \sum\limits_{m=1}^{M} p(x_m)\,\frac{|s|}{M}
-\end{equation}
-with integration step size $\delta = |s|/M$, where $|s|$ is the length of the line segment $s$.
-In the implementation, $M$ is finite and acts as a hyperparameter which controls the accuracy of the approximation in \autoref{eq:line-integral-approximation} through the number of equidistant points $x_m$.
+$${#eq-line-integral-approximation}
 
-In the software implementation, the density at the bounds $m=1$ and $m=M$ in \autoref{eq:line-integral-approximation} might be undefined.
+with integration step size $\delta = |s|/M$, where $|s|$ is the length of the line segment $s$.
+In the implementation, $M$ is finite and acts as a hyperparameter which controls the accuracy of the approximation in @eq-line-integral-approximation through the number of equidistant points $x_m$.
+
+In the software implementation, the density at the bounds $m=1$ and $m=M$ in @eq-line-integral-approximation might be undefined.
 We tackle this by setting $p(x_1)=p(x_M)=0$, and the de-facto effect of this practical adjustment vanishes for increasing accuracy $M$.
 
 
@@ -718,62 +708,61 @@ We tackle this by setting $p(x_1)=p(x_M)=0$, and the de-facto effect of this pra
 
 We validate our approximation for a Dirichlet distribution which has known analytic marginal distributions as a ground-truth. 
 For $(\pi_1, \ldots, \pi_J)\in\Delta^{J-1}, J\geq2$, the Dirichlet distribution $\mathrm{Dir}(\alpha_1,\ldots,\alpha_J)$ has the probability density function
-\begin{equation}
+$$
 \begin{aligned}
     p(\pi_1,\ldots,\pi_J\given\alpha_1,\ldots,\alpha_J) &= \mathbf{B}(\alpha_1,\ldots,\alpha_J)^{-1}\,\prod\limits_{j=1}^J\pi_j^{\alpha_j-1}, \alpha_j>0\,\forall\,j=1,\ldots,J\;\;\text{with}\\
     \mathbf{B}(\alpha_1,\ldots,\alpha_J)&=\left(\prod\limits_{j=1}^{J}\Gamma(\alpha_j)\right)\,\Gamma\left(\prod\limits_{j=1}^J \alpha_j\right)^{-1},
 \end{aligned}
-\end{equation}
-where $\Gamma$ denotes the Gamma function. The Dirichlet distribution is a multivariate generalization of the Beta distribution \autocite{kotz_continuous_2000}.
+$$
+where $\Gamma$ denotes the Gamma function. The Dirichlet distribution is a multivariate generalization of the Beta distribution [@kotz_continuous_2000].
 To ease the illustration, we study a Dirichlet distribution $\mathrm{Dir}(\alpha_1, \alpha_2,\alpha_3)$ over the 2-simplex $\Delta^2$ with parameter vector $(\alpha_1, \alpha_2, \alpha_3)=(2,5,3)$.
-This implies the following analytic multivariate marginal distributions \autocite{aitchison_statistical_1982}, which we will use as a ground-truth to benchmark our approximation against:
-\begin{equation}
+This implies the following analytic multivariate marginal distributions [@aitchison_statistical_1982], which we will use as a ground-truth to benchmark our approximation against:
+
+$$
     \begin{aligned}
         (\pi_1, \pi_2) &\sim \Dir(\alpha_1, \alpha_2)=\Dir(2, 5),\\
         (\pi_1, \pi_3) &\sim \Dir(\alpha_1, \alpha_3)=\Dir(2, 3),\\
         (\pi_2, \pi_3) &\sim \Dir(\alpha_2, \alpha_3)=\Dir(5, 3).
     \end{aligned}
-\end{equation}
+$$
 \autoref{fig:validation-numeric-approximation} illustrates that the proposed approximation technique yields essentially equal results to the analytic marginal distributions for a subgrid depth of $D=10$ ($2^{10}=1024$ evaluation nodes on each edge) and an integration accuracy of $M=1000$.
 For the practical purpose of visualizing (probability) densities over higher-order simplices in a lower-order canvas, this shows that (i) the density information can be preserved through the simplex projection; and (ii) the necessary numerical approximation does not introduce substantial inaccuracies.
 
-\begin{figure*}[t]
-\centering
-\begin{subfigure}[t]{0.28\linewidth}
-    \includegraphics[width=\linewidth]{plots/numerical_approximation_recursive_1.pdf}
-    \caption{$x_m$ is between nodes}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.28\linewidth}
-    \includegraphics[width=\linewidth]{plots/numerical_approximation_recursive_2.pdf}
-    \caption{Barycentric approximation}
-\end{subfigure}
-\hfill
-\begin{subfigure}[t]{0.40\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{plots/density_approximation_recursive.pdf}
-    \caption{Recursive density approximation}
-    \label{fig:numeric-approximation-recursive}
-\end{subfigure}
-\caption{Illustration of the recursive method to interpolate lower-order marginal densities from a joint density over a $3$-simplex (tetrahedron). \textbf{(a)} Since $p(x_m)$ cannot be evaluated directly, the density will be approximated through the $J-1=3$ nearest neighbors $z_1, z_2, z_3$. \textbf{(b)} The density of $x_m$ is approximated through barycentric interpolation of the densities of the nearest neighbor vertices $z_1, z_2, z_3$. \textbf{(c)} Applying Algorithm \ref{alg:simplex-marginal-density-numeric} recursively yields approximations for lower-order marginal distributions as recursive interpolations. The analytic density is defined over the tetrahedron $\Delta^3$. The $3$-variate marginal density approximations $\hat{p}(\pi_1,\pi_2,\pi_3)\approx \int p(\pi_1, \pi_2, \pi_3, \pi_4)\diff\pi_4$ are depicted on the area of the triangular facets using the viridis color palette. The subsequent $2-$variate marginal density approximations are defined over the edges. These densities are obtained via recursive approximation (see \textbf{(a)} and \textbf{(b)}) and plotted on the edges with the viridis-plasma palette. For instance, the edge $\overline{v_1v_2}$ shows the recursive approximation of the marginal density $\hat{p}(\pi_1,\pi_2)\approx \int \hat{p}(\pi_1, \pi_2, \pi_3)\diff \pi_3$.}
-\label{fig:numeric-approximation-recursive-concept}
-\end{figure*}
+
+:::{#fig-numeric-approximation-recursive-concept}
+:::{layout="[28,28,40]"}
+:::{}
+![$x_m$ is between nodes](plots/numerical_approximation_recursive_1.png){#fig-nodes}
+:::
+
+:::{}
+![Barycentric approximation.](plots/numerical_approximation_recursive_2.png){#fig-bary-approx}
+:::
+
+:::{}
+![Recursive density approximation.](plots/density_approximation_recursive.png){#fig-numeric-approximation-recursive}
+:::
+
+:::
+Illustration of the recursive method to interpolate lower-order marginal densities from a joint density over a $3$-simplex (tetrahedron). \textbf{(a)} Since $p(x_m)$ cannot be evaluated directly, the density will be approximated through the $J-1=3$ nearest neighbors $z_1, z_2, z_3$. \textbf{(b)} The density of $x_m$ is approximated through barycentric interpolation of the densities of the nearest neighbor vertices $z_1, z_2, z_3$. \textbf{(c)} Applying @alg-simplex-marginal-density-numeric recursively yields approximations for lower-order marginal distributions as recursive interpolations. The analytic density is defined over the tetrahedron $\Delta^3$. The $3$-variate marginal density approximations $\hat{p}(\pi_1,\pi_2,\pi_3)\approx \int p(\pi_1, \pi_2, \pi_3, \pi_4)\diff\pi_4$ are depicted on the area of the triangular facets using the viridis color palette. The subsequent $2-$variate marginal density approximations are defined over the edges. These densities are obtained via recursive approximation (see \textbf{(a)} and \textbf{(b)}) and plotted on the edges with the viridis-plasma palette. For instance, the edge $\overline{v_1v_2}$ shows the recursive approximation of the marginal density $\hat{p}(\pi_1,\pi_2)\approx \int \hat{p}(\pi_1, \pi_2, \pi_3)\diff \pi_3$.
+:::
+
 
 #### Recursive Marginal Approximations are Possible through Interpolation
 
 For $J=4$ dimensions, the full-order simplex $\Delta$ is a tetrahedron.
 Accordingly, the $3$-variate marginal density distributions are defined over the $2$-simplices (triangles) at the facets of the tetrahedron, and approximated as described above.
 In theory, this algorithm could be carried out again in order to obtain $2$-variate marginal distributions along the edges of each $2$-simplex.
-However, Algorithm \ref{alg:simplex-marginal-density-numeric} assumes that we can readily evaluate the density $p(x)$ at any point $x$ in the $2$-simplex (triangle).
-This is not generally the case because we only have access to a numeric density for the subgrid $Z\subseteq\Delta$ which we approximated via Algorithm \ref{alg:simplex-marginal-density-numeric}.
+However, @alg-simplex-marginal-density-numeric assumes that we can readily evaluate the density $p(x)$ at any point $x$ in the $2$-simplex (triangle).
+This is not generally the case because we only have access to a numeric density for the subgrid $Z\subseteq\Delta$ which we approximated via @alg-simplex-marginal-density-numeric.
 
 We address the problem of accessing a density $p(x)$ for arbitrary $x$ through a straightforward barycentric interpolation, as explained in the following.
-First, we apply Algorithm \ref{alg:simplex-marginal-density-numeric} with the recursion step $\Delta\leftarrow\sigma_{-j}$ and proceed as usual until we need to evaluate the density $p(x_m)$ at the node $x_m$.
+First, we apply @alg-simplex-marginal-density-numeric with the recursion step $\Delta\leftarrow\sigma_{-j}$ and proceed as usual until we need to evaluate the density $p(x_m)$ at the node $x_m$.
 Because we do not generally have access to the density $p(x_m)$, we approximate $p(x_m)$ with an interpolation from its $J-1$ nearest neighbors $z_1, \ldots, z_{J-1}$ (i.e., the vertices of the enclosing $J-2$ simplex of the subdivision, see \autoref{fig:numeric-approximation-recursive}).
-The notation $z_j$ emphasizes that the density $\hat{p}(z_j)$ of these vertices has already been approximated through the previous iteration of Algorithm \ref{alg:simplex-marginal-density-numeric}.
+The notation $z_j$ emphasizes that the density $\hat{p}(z_j)$ of these vertices has already been approximated through the previous iteration of @alg-simplex-marginal-density-numeric.
 
 With $\lambda_1, \ldots, \lambda_{J-1}$ as the barycentric coordinates of $x_m$ with reference vertices $z_1, \ldots, z_{J-1}$, we obtain the linear barycentric interpolation $\hat{p}(x_m) = \sum_{j=1}^{J-1}\lambda_j\hat{p}(z_j)$ for the probability density of $x_m$. More sophisticated interpolation schemes are possible as well but do not fall within the scope of this paper.
-This process can be repeated recursively (with recursion $\Delta\leftarrow\sigma_{-j}$) until $\Delta=\Delta^1$ (line segment) in Algorithm \ref{alg:simplex-marginal-density-numeric}.
+This process can be repeated recursively (with recursion $\Delta\leftarrow\sigma_{-j}$) until $\Delta=\Delta^1$ (line segment) in @alg-simplex-marginal-density-numeric.
 The result of applying the recursive approximation technique to an arbitrary density over the $3$-simplex is illustrated in \autoref{fig:numeric-approximation-recursive}.
 	
 ## Conclusion
@@ -804,9 +793,9 @@ MS and PCB were supported by the Deutsche Forschungsgemeinschaft (DFG, German Re
 #### The "is compatible with" Relation $\rel$
 
 Let $\K=\left\{\sigma_1,\ldots,\sigma_J\right\}$ be a pure simplicial complex, and $I(\sigma_j)$ be the set of vertex indices of the simplex $\sigma_j$.
-		The \emph{"is compatible with" relation}
-		    \begin{equation}
-		        \begin{aligned}
+		The *"is compatible with" relation*
+$$
+\begin{aligned}
 		    \rel\;=
 		    \Big\{ (A, B)\;\Big\vert\;&
 		    A=(\alpha_1, \ldots, \alpha_n)\in\sigma_1,
@@ -815,15 +804,38 @@ Let $\K=\left\{\sigma_1,\ldots,\sigma_J\right\}$ be a pure simplicial complex, a
 		    (\tilde{\alpha}_k)_{k\in U} = (\tilde{\beta}_k)_{k\in U}
 		    \Big\}
 		    \subseteq\sigma_1\times\sigma_2
-		        \end{aligned}
-		    \end{equation}
+\end{aligned}
+$$
 
 describes equivalence of points across simplices $\sigma_1, \sigma_2\in\K$ with respect to the ratio of their shared components, which we call "compatibility".
 According to conventions, we define the infix notation $A\rel B \Longleftrightarrow (A, B)\in\;\rel$.
 
+<!-- :::{fig-is-compatible-with} -->
+<!-- ![](tikz/is-compatible-with.tex){width=50%} -->
+
+<!-- If two points are compatible according to the relation $\rel$, they have identical projections onto shared faces. -->
+<!--     	$\forall R\in r:T\rel R$ because the projections on the shared face $\overline{v_1v_3}$ are equal, $\psi_2(T)=\psi_4(R)=R'$. -->
+<!--     	What is more, we can extend this to all points in the simplex $\sigma_{-4}$ which project to $R'$ as well, $\forall\,R\in r\;\forall\,\tilde{T}\in t:R\rel\tilde{T}$. -->
+<!-- ::: -->
+
+<!-- ```{r foo, out.width="100%", fig.cap="An example image."} -->
+<!-- knitr::input("tikz/is-compatible-with") -->
+<!-- ``` -->
+
+
 <!-- tikZ graphic -->
 
-    	\begin{figure}[t]
+:::{.callout-warning}
+
+## TO DO: tikZ graphic to html
+
+:::
+
+
+
+
+
+\begin{figure}[t]
     		\centering
     		\begin{adjustbox}{width=0.5\textwidth}
     			\input{tikz/is-compatible-with}
@@ -831,35 +843,32 @@ According to conventions, we define the infix notation $A\rel B \Longleftrightar
     	\caption{If two points are compatible according to the relation $\rel$, they have identical projections onto shared faces.
     	$\forall R\in r:T\rel R$ because the projections on the shared face $\overline{v_1v_3}$ are equal, $\psi_2(T)=\psi_4(R)=R'$.
     	What is more, we can extend this to all points in the simplex $\sigma_{-4}$ which project to $R'$ as well, $\forall\,R\in r\;\forall\,\tilde{T}\in t:R\rel\tilde{T}$.}
-    	\label{fig:is-compatible-with}
-    	\end{figure}
+    	\label{fig-is-compatible-with}
+\end{figure}
 
 
-		While the preimage of the map $\phi$ is clearly the $(J-1)$-simplex $\Delta$, determining the exact image is not as straightforward.
+While the preimage of the map $\phi$ is clearly the $(J-1)$-simplex $\Delta$, determining the exact image is not as straightforward.
 		First of all, the function $\phi$ takes a $J$-dimensional point $x$ and performs $J$ perspective projections, yielding a vector
-		$$
+$$
 		    \phi(x) = 
 		    \big(\psi_1(x), \ldots, \psi_J(x)\big) \defeq
 		    \big(\phi(x)_1, \ldots, \phi(x)_J\big).
-		$$
+$$
 		Each element of this vector is an element of the corresponding facet,  $\psi_j(x)\defeq\phi(x)_j\in\sigma_{-j}$, making the vector of projections an element of the product space of the facets $\prod\limits_{j=1}^J\sigma_{-j}$.
-		However, due to the invariance of the barycentric coordinate ratios to perspective projection, not all combinations in the product space are possible images (cf. \autoref{theo:preimage-unlabeled}).
+		However, due to the invariance of the barycentric coordinate ratios to perspective projection, not all combinations in the product space are possible images (cf. @thm-unlabeled-points).
 		Instead, we need to restrict the image to objects where all combinations of projections $\phi(x)_n, \phi(x)_m, (n, m)\in\{1,\ldots,J\}^2$ are compatible to each other according to the $\rel$ relation (see below).
 		The image of $\Delta$ under the function $\phi$ follows as
-		\begin{equation}\label{eq:image-domain-simplex projection}
-		    \mathrm{Img}_{\phi}(\Delta) = \left\{\big(\phi(x)_1,\ldots,\phi(x)_J)\in\prod\limits_{j=1}^J \sigma_{-j}\,\middle\vert\, \phi(x)_n\rel\phi(x)_m\ \forall (n,m)\in \{1,\ldots,J\}^2 \right\}
-		\end{equation}
-  
+
+$$
+\mathrm{Img}_{\phi}(\Delta) = \left\{\big(\phi(x)_1,\ldots,\phi(x)_J)\in\prod\limits_{j=1}^J \sigma_{-j}\,\middle\vert\, \phi(x)_n\rel\phi(x)_m\ \forall (n,m)\in \{1,\ldots,J\}^2 \right\}
+$${#eq-image-domain-simplex-projection}
 
 
 
-
-\begin{figure}[t]
-    		\centering
-    		\begin{adjustbox}{width=0.3\textwidth}
-    			\includegraphics[]{plots/z_and_established_concurrencies.png}
-    		\end{adjustbox}
-    	\caption{Illustration of (II) in the proof. Assuming that an additional concurrency $z$ exists, there are corresponding established concurrencies $\hat{x}^{(j)}$, one for each hyperplane (line) $Z_j$, $j = 1, 2, 3$. For each hyperplane (line) $Z_j$, there must be two other hyperplanes (lines) that share established concurrencies $\hat{x}^{(j)}$ with $Z_j$ by construction.}
-    	\label{fig:z-and-established}
-\end{figure}
+:::{#fig-z-and-established}
+:::{}
+![](plots/z_and_established_concurrencies.png){width=50%}
+:::
+Illustration of (II) in the proof. Assuming that an additional concurrency $z$ exists, there are corresponding established concurrencies $\hat{x}^{(j)}$, one for each hyperplane (line) $Z_j$, $j = 1, 2, 3$. For each hyperplane (line) $Z_j$, there must be two other hyperplanes (lines) that share established concurrencies $\hat{x}^{(j)}$ with $Z_j$ by construction.
+:::
 

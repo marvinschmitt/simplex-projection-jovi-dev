@@ -24,11 +24,11 @@
 
 \usepackage{array}
 
-\newcommand\myarray[1]{%
-  \begingroup
+\newcommand\myarray[1]{
+  {
   \renewcommand\arraystretch{1.33}
   \left\{ \begin{array}{@{}l@{}} #1 \end{array} \right.
-  \endgroup}
+  }}
 
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:}}
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\renewcommand{\algorithmicensure}{\textbf{Output:}}
