@@ -39,7 +39,7 @@ editor:
     wrap: sentence
 ---
 
-<!-- text "%%" show up somehow thats why opacity 0 -->
+<!-- text "%%" show up somehow thats why opacity 0  -->
 <div style="opacity:0;">
 {{< include _math.tex >}}
 </div>
@@ -520,7 +520,8 @@ is a bijective mapping.
 
 One critical argument in the proof builds on a corollary of the Rouché-Capelli theorem [@safarevic_linear_2013], which we will denote in the following: "In an euclidean space $\mathbb{R}^{J-1}$, $J$ hyperplanes $Z_1, \ldots, Z_J$ can have zero, one, or infinitely many concurrencies."
 
-The $J$ hyperplanes are defined by $Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1} = c_j$, and the concurrency (intersection of *all* hyperplanes simultaneously) is the solution to the following system of equations: $$
+The $J$ hyperplanes are defined by $Z_j: a_{j,1}x_1 + \ldots + a_{j, J-1}x_{J-1} = c_j$, and the concurrency (intersection of *all* hyperplanes simultaneously) is the solution to the following system of equations: 
+$$
 \underbrace{
     \begin{pmatrix}
         a_{1,1} & \cdots & a_{1, J-1} \\
@@ -818,7 +819,8 @@ MS and PCB were supported by the Deutsche Forschungsgemeinschaft (DFG, German Re
 #### The "is compatible with" Relation $\rel$
 
 Let $\K=\left\{\sigma_1,\ldots,\sigma_J\right\}$ be a pure simplicial complex, and $I(\sigma_j)$ be the set of vertex indices of the simplex $\sigma_j$.
-The *"is compatible with" relation* $$
+The *"is compatible with" relation* 
+$$
 \begin{aligned}
             \rel\;=
             \Big\{ (A, B)\;\Big\vert\;&
@@ -875,7 +877,6 @@ $\forall R\in r:T\rel R$ because the projections on the shared face $\overline{v
 What is more, we can extend this to all points in the simplex $\sigma_{-4}$ which project to $R'$ as well, $\forall\,R\in r\;\forall\,\tilde{T}\in t:R\rel\tilde{T}$.
 :::
 
-```{=tex}
 \begin{figure}[t]
             \centering
             \begin{adjustbox}{width=0.5\textwidth}
@@ -886,7 +887,7 @@ What is more, we can extend this to all points in the simplex $\sigma_{-4}$ whic
         What is more, we can extend this to all points in the simplex $\sigma_{-4}$ which project to $R'$ as well, $\forall\,R\in r\;\forall\,\tilde{T}\in t:R\rel\tilde{T}$.}
         \label{fig-is-compatible-with}
 \end{figure}
-```
+
 While the preimage of the map $\phi$ is clearly the $(J-1)$-simplex $\Delta$, determining the exact image is not as straightforward.
 First of all, the function $\phi$ takes a $J$-dimensional point $x$ and performs $J$ perspective projections, yielding a vector $$
             \phi(x) = 
