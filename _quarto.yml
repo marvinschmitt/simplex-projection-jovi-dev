@@ -5,6 +5,10 @@ format:
   html:
     theme: lumen
     toc: true
-
+    include-in-header:
+      - text: |
+          <script src="http://tikzjax.com/v1/tikzjax.js" type="text/javascript"></script>
+          <link rel="stylesheet" type="text/css" href="http://tikzjax.com/v1/fonts.css">
 number-sections: true
 number-depth: 2
+
