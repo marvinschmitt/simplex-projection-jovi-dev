@@ -62,8 +62,8 @@ div.csl-indent {
 <link href="index_files/libs/quarto-contrib/pseudocode-2.4.1/pseudocode.min.css" rel="stylesheet">
 <script src="index_files/libs/quarto-contrib/videojs/video.min.js"></script>
 <link href="index_files/libs/quarto-contrib/videojs/video-js.css" rel="stylesheet">
-<script src="http://tikzjax.com/v1/tikzjax.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="http://tikzjax.com/v1/fonts.css">
+<script src="https://tikzjax.com/v1/tikzjax.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://tikzjax.com/v1/fonts.css">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -772,7 +772,7 @@ Figure&nbsp;5: Illustrations for <a href="#thm-unlabeled-points" class="quarto-x
 <!-- :::{.callout-warning} -->
 <!-- ## TO DO: Format the pseudocode algorithm, see [https://github.com/leovan/quarto-pseudocode](https://github.com/leovan/quarto-pseudocode) -->
 <!-- ::: -->
-<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-comment-delimiter="//" data-pseudocode-index="1" data-line-number-punc=":" data-alg-title="Algorithm" data-line-number="true" data-indent-size="1.2em" data-no-end="false">
+<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-line-number="true" data-alg-title="Algorithm" data-no-end="false" data-indent-size="1.2em" data-pseudocode-index="1" data-line-number-punc=":" data-comment-delimiter="//">
 <div class="pseudocode">
 \begin{algorithm} \caption{Marginal density approximation} \begin{algorithmic} \State \textbf{Input:} Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$ \State \textbf{Output:} Approximate marginal density $\hat{p}(z)$ \For{$\sigma_{-j} \in \mathcal{K}$} \For{$z \in \mathcal{S}(\sigma_{-j})$} \State $s = \overline{z v_j}$ \State $\hat{p}(z)=0$ \For{$m=1,\ldots, M$} \State $x_m\leftarrow z + \frac{s}{M}$ \State $\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$ \EndFor \EndFor \EndFor \Return $\hat{p}(z)$ \end{algorithmic} \end{algorithm}
 </div>
