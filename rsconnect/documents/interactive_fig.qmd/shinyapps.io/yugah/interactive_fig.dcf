@@ -1,0 +1,15 @@
+name: interactive_fig
+title: interactive_fig
+username: yugah
+account: yugah
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11664414
+bundleId: 8453222
+url: https://yugah.shinyapps.io/interactive_fig/
+version: 1
+quarto_version: 1.4.551
+quarto_engines: knitr
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: _extensions/leovan/pseudocode/_extension.yml|_extensions/leovan/pseudocode/pseudocode.lua|_extensions/leovan/pseudocode/pseudocode.min.css|_extensions/leovan/pseudocode/pseudocode.min.js|_math.tex|_quarto.yml|.github/workflows/publish.yml|bibliography.bib|index.html|index.ipynb|index.qmd|README.md|tikz/is-compatible-with.tex|index_files|plots
