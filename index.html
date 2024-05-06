@@ -772,7 +772,7 @@ Figure&nbsp;5: Illustrations for <a href="#thm-unlabeled-points" class="quarto-x
 <!-- :::{.callout-warning} -->
 <!-- ## TO DO: Format the pseudocode algorithm, see [https://github.com/leovan/quarto-pseudocode](https://github.com/leovan/quarto-pseudocode) -->
 <!-- ::: -->
-<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-line-number="true" data-alg-title="Algorithm" data-no-end="false" data-indent-size="1.2em" data-pseudocode-index="1" data-line-number-punc=":" data-comment-delimiter="//">
+<div id="alg-simplex-marginal-density-numeric" class="pseudocode-container" data-pseudocode-index="1" data-line-number="true" data-alg-title="Algorithm" data-no-end="false" data-comment-delimiter="//" data-line-number-punc=":" data-indent-size="1.2em">
 <div class="pseudocode">
 \begin{algorithm} \caption{Marginal density approximation} \begin{algorithmic} \State \textbf{Input:} Simplex $\Delta$, probability density function $p(x)$ over $\Delta$, integral accuracy $M$ \State \textbf{Output:} Approximate marginal density $\hat{p}(z)$ \For{$\sigma_{-j} \in \mathcal{K}$} \For{$z \in \mathcal{S}(\sigma_{-j})$} \State $s = \overline{z v_j}$ \State $\hat{p}(z)=0$ \For{$m=1,\ldots, M$} \State $x_m\leftarrow z + \frac{s}{M}$ \State $\hat{p}(z) \mathrel{+}= p(x_m)\,\frac{|s|}{M}$ \EndFor \EndFor \EndFor \Return $\hat{p}(z)$ \end{algorithmic} \end{algorithm}
 </div>
